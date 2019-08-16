@@ -25,12 +25,13 @@
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"></LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
-        android:layout_height="100dp"
+        android:layout_height="70dp"
+        android:background="#D5D6D6"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,32 +43,41 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="#D1D2D2"
             android:text="学"
-            android:textSize="36sp" />
+            android:textSize="36sp"
+            android:textStyle="normal"
+            tools:ignore="ButtonStyle,HardcodedText" />
 
         <Button
             android:id="@+id/button2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="#D0D1D1"
             android:text="勤"
-            android:textSize="36sp" />
+            android:textSize="36sp"
+            tools:ignore="ButtonStyle,HardcodedText" />
 
         <Button
             android:id="@+id/button3"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="#D0D1D1"
             android:text="告"
-            android:textSize="36sp" />
+            android:textSize="36sp"
+            tools:ignore="ButtonStyle,HardcodedText" />
 
         <Button
             android:id="@+id/button4"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="#CFD0D0"
             android:text="我"
-            android:textSize="36sp" />
+            android:textSize="36sp"
+            tools:ignore="ButtonStyle,HardcodedText" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

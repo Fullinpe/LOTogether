@@ -8,10 +8,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +38,7 @@ public class mFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private String str;
 
     private OnFragmentInteractionListener mListener;
 
@@ -67,14 +76,84 @@ public class mFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        switch (Integer.parseInt(mParam1))
+        {
+            case R.layout.xue_layout:
+                ListView listView=view.findViewById(R.id.listview1);
+                List<Map<String,Object>> list=new ArrayList<>();
+                Map<String,Object> map=new HashMap<>();
+                map.put("icon_author",R.mipmap.ic_launcher_round);
+                map.put("author","作者1");
+                map.put("essay","\t这是内容前部分，1\n这是内容前部分，这是内容前部分，这是内容前部分，这是内容前部分。");
+                map.put("date","2019-8-3");
+                map.put("thumbs","获赞次数：12");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("icon_author",R.mipmap.ic_launcher_round);
+                map.put("author","作者2");
+                map.put("essay","\t这是内容前部分，2\n这是内容前部分，\n这是内容前部分，\n这是内容前部分，这是内容前部分。");
+                map.put("date","2019-8-3");
+                map.put("thumbs","获赞次数：12152");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("icon_author",R.mipmap.ic_launcher_round);
+                map.put("author","作者3");
+                map.put("essay","\t这是内容前部分，3\n这是内容前部分，\n这是内容前部分，\n这是内容前部分，\n这是内容前部分。");
+                map.put("date","2019-8-3");
+                map.put("thumbs","获赞次数：12123123");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("icon_author",R.mipmap.ic_launcher_round);
+                map.put("author","作者4");
+                map.put("essay","\t这是内容前部分，4\n这是内容前部分，这是内容前部分，这是内容前部分，这是内容前部分。");
+                map.put("date","2019-8-3");
+                map.put("thumbs","获赞次数：120000");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("icon_author",R.mipmap.ic_launcher_round);
+                map.put("author","作者5");
+                map.put("essay","\t这是内容前部分，5\n这是内容前部分，这是内容前部分，这是内容前部分，这是内容前部分。");
+                map.put("date","2019-8-3");
+                map.put("thumbs","获赞次数：12000");
+                list.add(map);
+//                SimpleAdapter adapter=new SimpleAdapter(getActivity(),
+//                        list,
+//                        R.layout.xue_item,
+//                        new String[]{"icon_author","author","essay","date","thumbs"},
+//                        new int[]{R.id.icon_author,R.id.textView6,R.id.textView7,R.id.textView8,R.id.textView9});
+                mAdapter adapter=new mAdapter(getActivity());
+                adapter.setList(list);
+                listView.setAdapter(adapter);
+                break;
+            case R.layout.qin_layout:
+                final TextView tv=view.findViewById(R.id.textView3);
+                final Handler handler=new Handler();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        str=DBUtils.connect_mysql();
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv.setText(str);
+                            }
+                        });
+                    }
+                }).start();
+                break;
+            case R.layout.gao_layout:
 
+                break;
+            case R.layout.self_layout:
+
+                break;
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        TextView textView = new TextView(getActivity());
-//        textView.setText(R.string.hello_blank_fragment);
+
         return inflater.inflate(Integer.parseInt(mParam1),container,false);
     }
 
