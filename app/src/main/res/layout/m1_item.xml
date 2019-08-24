@@ -8,68 +8,39 @@
     android:descendantFocusability="blocksDescendants">
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/num_m1_i"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:text="1"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/name_m1_i"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/name_m1_i" />
+
+    <TextView
+        android:id="@+id/name_m1_i"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="22dp"
-        android:text="作者"
-        android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/icon_author"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="16dp"
+        android:text="Jack Ma"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/job_m1_i"
+        app:layout_constraintStart_toStartOf="@+id/num_m1_i"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView7"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="      这是内容前部分，这是内容前部分，这是内容前部分，这是内容前部分，这是内容前部分。"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
-
-    <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/job_m1_i"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="2019-8-3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
-
-    <ImageView
-        android:id="@+id/icon_author"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/ic_launcher_round" />
-
-    <TextView
-        android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="点赞次数：12"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="28dp"
-        android:layout_height="27dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:background="#FDFDFE"
+        android:text="实验室负责人"
+        app:layout_constraintBottom_toBottomOf="@+id/name_m1_i"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/btn_star_big_off" />
+        app:layout_constraintTop_toTopOf="@+id/name_m1_i" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

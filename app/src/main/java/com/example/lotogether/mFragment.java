@@ -77,54 +77,84 @@ public class mFragment extends Fragment {
         switch (Integer.parseInt(mParam1))
         {
             case R.layout.m1_layout:
-                ListView listView=view.findViewById(R.id.listview1);
+                ListView listView=view.findViewById(R.id.member_m1);
                 List<Map<String,Object>> list=new ArrayList<>();
                 Map<String,Object> map=new HashMap<>();
-                map.put("icon_author",R.mipmap.ic_launcher_round);
-                map.put("author","作者1");
-                map.put("essay","\t这是内容前部分，1\n这是内容前部分，这是内容前部分，这是内容前部分，这是内容前部分。");
-                map.put("date","2019-8-3");
-                map.put("thumbs","获赞次数：12");
+                map.put("num","1");
+                map.put("name","zhelin");
+                map.put("job","负责人");
                 list.add(map);
                 map=new HashMap<>();
-                map.put("icon_author",R.mipmap.ic_launcher_round);
-                map.put("author","作者2");
-                map.put("essay","\t这是内容前部分，2\n这是内容前部分，\n这是内容前部分，\n这是内容前部分，这是内容前部分。");
-                map.put("date","2019-8-3");
-                map.put("thumbs","获赞次数：12152");
+                map.put("num","2");
+                map.put("name","Fullinpe");
+                map.put("job","职务1");
                 list.add(map);
                 map=new HashMap<>();
-                map.put("icon_author",R.mipmap.ic_launcher_round);
-                map.put("author","作者3");
-                map.put("essay","\t这是内容前部分，3\n这是内容前部分，\n这是内容前部分，\n这是内容前部分，\n这是内容前部分。");
-                map.put("date","2019-8-3");
-                map.put("thumbs","获赞次数：12123123");
+                map.put("num","3");
+                map.put("name","yunqiang");
+                map.put("job","职务2");
                 list.add(map);
                 map=new HashMap<>();
-                map.put("icon_author",R.mipmap.ic_launcher_round);
-                map.put("author","作者4");
-                map.put("essay","\t这是内容前部分，4\n这是内容前部分，这是内容前部分，这是内容前部分，这是内容前部分。");
-                map.put("date","2019-8-3");
-                map.put("thumbs","获赞次数：120000");
+                map.put("num","4");
+                map.put("name","yecong");
+                map.put("job","职务2");
                 list.add(map);
                 map=new HashMap<>();
-                map.put("icon_author",R.mipmap.ic_launcher_round);
-                map.put("author","作者5");
-                map.put("essay","\t这是内容前部分，5\n这是内容前部分，这是内容前部分，这是内容前部分，这是内容前部分。");
-                map.put("date","2019-8-3");
-                map.put("thumbs","获赞次数：12000");
+                map.put("num","5");
+                map.put("name","guiquan");
+                map.put("job","职务3");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("num","6");
+                map.put("name","Fullinpe");
+                map.put("job","职务1");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("num","7");
+                map.put("name","yunqiang");
+                map.put("job","职务2");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("num","8");
+                map.put("name","yecong");
+                map.put("job","职务2");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("num","9");
+                map.put("name","guiquan");
+                map.put("job","职务3");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("num","10");
+                map.put("name","Fullinpe");
+                map.put("job","职务1");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("num","11");
+                map.put("name","yunqiang");
+                map.put("job","职务2");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("num","12");
+                map.put("name","yecong");
+                map.put("job","职务2");
+                list.add(map);
+                map=new HashMap<>();
+                map.put("num","13");
+                map.put("name","guiquan");
+                map.put("job","职务3");
                 list.add(map);
 //                SimpleAdapter adapter=new SimpleAdapter(getActivity(),
 //                        list,
 //                        R.layout.m1_item,
-//                        new String[]{"icon_author","author","essay","date","thumbs"},
-//                        new int[]{R.id.icon_author,R.id.textView6,R.id.textView7,R.id.textView8,R.id.textView9});
-                mAdapter adapter=new mAdapter(getActivity());
+//                        new String[]{"icon_num","num","essay","name","job"},
+//                        new int[]{R.id.icon_num,R.id.textView6,R.id.textView7,R.id.textView8,R.id.textView9});
+                m1_Adapter adapter=new m1_Adapter(getActivity());
                 adapter.setList(list);
                 listView.setAdapter(adapter);
                 break;
             case R.layout.m2_layout:
-                final TextView tv=view.findViewById(R.id.textView3);
+                final TextView tv=view.findViewById(R.id.mysql_test);
                 final Handler handler=new Handler();
                 new Thread(new Runnable() {
                     @Override
@@ -140,7 +170,76 @@ public class mFragment extends Fragment {
                 }).start();
                 break;
             case R.layout.m3_layout:
-
+                ListView listView_m3=view.findViewById(R.id.newmember_m3);
+                List<Map<String,Object>> list_m3=new ArrayList<>();
+                Map<String,Object> map_m3=new HashMap<>();
+                map_m3.put("num","1");
+                map_m3.put("name","zhelin");
+                map_m3.put("accept","负责人");
+                list_m3.add(map_m3);
+                map_m3=new HashMap<>();
+                map_m3.put("num","2");
+                map_m3.put("name","Fullinpe");
+                map_m3.put("accept","接纳1");
+                list_m3.add(map_m3);
+                map_m3=new HashMap<>();
+                map_m3.put("num","3");
+                map_m3.put("name","yunqiang");
+                map_m3.put("accept","接纳2");
+                list_m3.add(map_m3);
+                map_m3=new HashMap<>();
+                map_m3.put("num","4");
+                map_m3.put("name","yecong");
+                map_m3.put("accept","接纳2");
+                list_m3.add(map_m3);
+//                map_m3=new HashMap<>();
+//                map_m3.put("num","5");
+//                map_m3.put("name","guiquan");
+//                map_m3.put("accept","接纳3");
+//                list_m3.add(map_m3);
+//                map_m3=new HashMap<>();
+//                map_m3.put("num","6");
+//                map_m3.put("name","Fullinpe");
+//                map_m3.put("accept","接纳1");
+//                list_m3.add(map_m3);
+//                map_m3=new HashMap<>();
+//                map_m3.put("num","7");
+//                map_m3.put("name","yunqiang");
+//                map_m3.put("accept","接纳2");
+//                list_m3.add(map_m3);
+//                map_m3=new HashMap<>();
+//                map_m3.put("num","8");
+//                map_m3.put("name","yecong");
+//                map_m3.put("accept","接纳2");
+//                list_m3.add(map_m3);
+//                map_m3=new HashMap<>();
+//                map_m3.put("num","9");
+//                map_m3.put("name","guiquan");
+//                map_m3.put("accept","接纳3");
+//                list_m3.add(map_m3);
+//                map_m3=new HashMap<>();
+//                map_m3.put("num","10");
+//                map_m3.put("name","Fullinpe");
+//                map_m3.put("accept","接纳1");
+//                list_m3.add(map_m3);
+//                map_m3=new HashMap<>();
+//                map_m3.put("num","11");
+//                map_m3.put("name","yunqiang");
+//                map_m3.put("accept","接纳2");
+//                list_m3.add(map_m3);
+//                map_m3=new HashMap<>();
+//                map_m3.put("num","12");
+//                map_m3.put("name","yecong");
+//                map_m3.put("accept","接纳2");
+//                list_m3.add(map_m3);
+//                map_m3=new HashMap<>();
+//                map_m3.put("num","13");
+//                map_m3.put("name","guiquan");
+//                map_m3.put("accept","接纳3");
+//                list_m3.add(map_m3);
+                m3_Adapter adapter_m3=new m3_Adapter(getActivity());
+                adapter_m3.setList(list_m3);
+                listView_m3.setAdapter(adapter_m3);
                 break;
             case R.layout.m4_layout:
 
@@ -149,7 +248,7 @@ public class mFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         return inflater.inflate(Integer.parseInt(mParam1),container,false);

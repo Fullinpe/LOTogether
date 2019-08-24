@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,17 +13,53 @@
         tools:ignore="UselessParent">
 
 
-        <TextView
-            android:id="@+id/textView2"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="178dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="xue"
-            tools:ignore="HardcodedText,InefficientWeight" />
+            android:background="#B7C3CA"
+            android:minHeight="100dp">
+
+            <TextView
+                android:id="@+id/num_m1_i2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:text="序号"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/name_m1_i2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/name_m1_i2" />
+
+            <TextView
+                android:id="@+id/job_m1_i2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:text="担任角色"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/name_m1_i2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/name_m1_i2" />
+
+            <TextView
+                android:id="@+id/name_m1_i2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
+                android:text="姓名"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/job_m1_i2"
+                app:layout_constraintStart_toStartOf="@+id/num_m1_i2"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ListView
-            android:id="@+id/listview1"
+            android:id="@+id/member_m1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
