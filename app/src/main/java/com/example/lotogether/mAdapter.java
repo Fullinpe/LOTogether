@@ -1,11 +1,11 @@
 package com.example.lotogether;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,13 +15,13 @@ import java.util.Map;
 
 public class mAdapter extends BaseAdapter {
 
-    List<Map<String,Object>> list;
-    LayoutInflater inflater;
-    public mAdapter(Context context) {
+    private List<Map<String,Object>> list;
+    private LayoutInflater inflater;
+    mAdapter(Context context) {
         this.inflater = LayoutInflater.from(context);
     }
 
-    public void setList(List<Map<String, Object>> list) {
+    void setList(List<Map<String, Object>> list) {
         this.list = list;
     }
 
@@ -42,7 +42,7 @@ public class mAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        View view1=inflater.inflate(R.layout.xue_item,null);
+        @SuppressLint({"ViewHolder", "InflateParams"}) View view1=inflater.inflate(R.layout.m1_item,null);
 
         ImageView imageView=view1.findViewById(R.id.icon_author);
         final TextView textView1=view1.findViewById(R.id.textView6);
@@ -59,6 +59,7 @@ public class mAdapter extends BaseAdapter {
         textView4.setText((String) map.get("thumbs"));
 
         imageButton.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View view) {
                 textView1.setText("Fullinpe");

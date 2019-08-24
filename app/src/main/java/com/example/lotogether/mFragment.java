@@ -3,18 +3,16 @@ package com.example.lotogether;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,7 +76,7 @@ public class mFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         switch (Integer.parseInt(mParam1))
         {
-            case R.layout.xue_layout:
+            case R.layout.m1_layout:
                 ListView listView=view.findViewById(R.id.listview1);
                 List<Map<String,Object>> list=new ArrayList<>();
                 Map<String,Object> map=new HashMap<>();
@@ -118,14 +116,14 @@ public class mFragment extends Fragment {
                 list.add(map);
 //                SimpleAdapter adapter=new SimpleAdapter(getActivity(),
 //                        list,
-//                        R.layout.xue_item,
+//                        R.layout.m1_item,
 //                        new String[]{"icon_author","author","essay","date","thumbs"},
 //                        new int[]{R.id.icon_author,R.id.textView6,R.id.textView7,R.id.textView8,R.id.textView9});
                 mAdapter adapter=new mAdapter(getActivity());
                 adapter.setList(list);
                 listView.setAdapter(adapter);
                 break;
-            case R.layout.qin_layout:
+            case R.layout.m2_layout:
                 final TextView tv=view.findViewById(R.id.textView3);
                 final Handler handler=new Handler();
                 new Thread(new Runnable() {
@@ -141,10 +139,10 @@ public class mFragment extends Fragment {
                     }
                 }).start();
                 break;
-            case R.layout.gao_layout:
+            case R.layout.m3_layout:
 
                 break;
-            case R.layout.self_layout:
+            case R.layout.m4_layout:
 
                 break;
         }

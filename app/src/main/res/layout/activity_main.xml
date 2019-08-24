@@ -44,8 +44,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="#D1D2D2"
-            android:text="学"
-            android:textSize="36sp"
+            android:text="实验室"
+            android:textSize="24sp"
             android:textStyle="normal"
             tools:ignore="ButtonStyle,HardcodedText" />
 
@@ -55,8 +55,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="#D0D1D1"
-            android:text="勤"
-            android:textSize="36sp"
+            android:text="管理"
+            android:textSize="24sp"
             tools:ignore="ButtonStyle,HardcodedText" />
 
         <Button
@@ -65,8 +65,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="#D0D1D1"
-            android:text="告"
-            android:textSize="36sp"
+            android:text="纳新"
+            android:textSize="24sp"
             tools:ignore="ButtonStyle,HardcodedText" />
 
         <Button
@@ -76,7 +76,7 @@
             android:layout_weight="1"
             android:background="#CFD0D0"
             android:text="我"
-            android:textSize="36sp"
+            android:textSize="24sp"
             tools:ignore="ButtonStyle,HardcodedText" />
     </LinearLayout>
 

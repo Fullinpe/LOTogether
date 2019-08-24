@@ -6,14 +6,9 @@ import java.sql.*;
 
 class DBUtils {
 
-    // MySQL 8.0 以下版本 - JDBC 驱动名及数据库 URL
-//	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-//	static final String DB_URL = "jdbc:mysql://localhost:3306/RUNOOB";
-
     // MySQL 8.0 以上版本 - JDBC 驱动名及数据库 URL
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://192.168.137.1:3306/test?serverTimezone=UTC";//?useSSL=false&serverTimezone=UTC";
-
+    private static final String DB_URL = "jdbc:mysql://10.22.39.84:3306/test?serverTimezone=UTC";
 
     // 数据库的用户名与密码，需要根据自己的设置
     private static final String USER = "customer";

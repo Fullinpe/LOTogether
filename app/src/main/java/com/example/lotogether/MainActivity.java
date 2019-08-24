@@ -15,10 +15,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mf1=mFragment.newInstance(R.layout.xue_layout+"","1");
-        mf2=mFragment.newInstance(R.layout.qin_layout+"","1");
-        mf3=mFragment.newInstance(R.layout.gao_layout+"","1");
-        mf4=mFragment.newInstance(R.layout.self_layout+"","1");
+        mf1=mFragment.newInstance(R.layout.m1_layout +"","1");
+        mf2=mFragment.newInstance(R.layout.m2_layout +"","1");
+        mf3=mFragment.newInstance(R.layout.m3_layout +"","1");
+        mf4=mFragment.newInstance(R.layout.m4_layout +"","1");
         getSupportFragmentManager().beginTransaction().add(R.id.ll,mf4).commitAllowingStateLoss();
 
         b1=findViewById(R.id.button1);
