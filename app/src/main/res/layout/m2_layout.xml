@@ -19,7 +19,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="qin"
-            android:visibility="gone"
+            android:visibility="visible"
             tools:ignore="HardcodedText,InefficientWeight" />
 
         <androidx.constraintlayout.widget.ConstraintLayout

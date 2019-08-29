@@ -36,7 +36,7 @@ public class mFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private String str;
+    private String[][] strings;
 
     private OnFragmentInteractionListener mListener;
 
@@ -77,9 +77,28 @@ public class mFragment extends Fragment {
         switch (Integer.parseInt(mParam1))
         {
             case R.layout.m1_layout:
+
+
                 ListView listView=view.findViewById(R.id.member_m1);
                 List<Map<String,Object>> list=new ArrayList<>();
                 Map<String,Object> map=new HashMap<>();
+
+//                final Handler handler=new Handler();
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        str=DBUtils.connect_mysql();
+//
+//                        handler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                tv.setText(str);
+//                            }
+//                        });
+//                    }
+//                }).start();
+
+
                 map.put("num","1");
                 map.put("name","zhelin");
                 map.put("job","负责人");
@@ -159,13 +178,21 @@ public class mFragment extends Fragment {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        str=DBUtils.connect_mysql();
+
+                        strings=DBUtils.connect_mysql("","G_ID");
+
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                tv.setText(str);
+                                for (int i=0;i<strings.length;i++)
+                                {
+                                    tv.setText(strings[i][0]);
+
+                                }
                             }
                         });
+
+
                     }
                 }).start();
                 break;
