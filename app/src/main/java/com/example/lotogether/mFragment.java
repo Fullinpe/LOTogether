@@ -1,23 +1,30 @@
 package com.example.lotogether;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,6 +45,8 @@ public class mFragment extends Fragment {
     private String mParam2;
     private String[][] strings;
 
+    private Handler handler=new Handler();
+
     private OnFragmentInteractionListener mListener;
 
     public mFragment() {
@@ -53,7 +62,7 @@ public class mFragment extends Fragment {
      * @return A new instance of fragment mFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static mFragment newInstance(String param1, String param2) {
+    static mFragment newInstance(String param1, String param2) {
         mFragment fragment = new mFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -78,121 +87,57 @@ public class mFragment extends Fragment {
         {
             case R.layout.m1_layout:
 
+                final ListView listView=view.findViewById(R.id.member_m1);
+                final List<Map<String,Object>> list=new ArrayList<>();
 
-                ListView listView=view.findViewById(R.id.member_m1);
-                List<Map<String,Object>> list=new ArrayList<>();
-                Map<String,Object> map=new HashMap<>();
+                final Handler handler1=new Handler();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        strings=DBUtils.select_DB("","G_ID","NAME","MGR","QQ","TEL");
+                        if(strings!=null)
+                        {
+                            Map<String, Object> map = new HashMap<>();
+                            for (int i=0;i<strings.length;i++)
+                            {
+                                if(i>0)
+                                    map =new HashMap<>();
+                                map.put("num",strings[i][0]);
+                                map.put("name",strings[i][1]);
+                                map.put("job",strings[i][2]);
+                                map.put("qq",strings[i][3]);
+                                map.put("tel",strings[i][4]);
+                                list.add(map);
+                            }
+                            handler1.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    m1_Adapter adapter=new m1_Adapter(getActivity());
+                                    adapter.setList(list);
+                                    listView.setAdapter(adapter);
+                                }
+                            });
+                        }
 
-//                final Handler handler=new Handler();
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        str=DBUtils.connect_mysql();
-//
-//                        handler.post(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                tv.setText(str);
-//                            }
-//                        });
-//                    }
-//                }).start();
+                    }
+                }).start();
 
-
-                map.put("num","1");
-                map.put("name","zhelin");
-                map.put("job","负责人");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","2");
-                map.put("name","Fullinpe");
-                map.put("job","职务1");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","3");
-                map.put("name","yunqiang");
-                map.put("job","职务2");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","4");
-                map.put("name","yecong");
-                map.put("job","职务2");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","5");
-                map.put("name","guiquan");
-                map.put("job","职务3");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","6");
-                map.put("name","Fullinpe");
-                map.put("job","职务1");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","7");
-                map.put("name","yunqiang");
-                map.put("job","职务2");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","8");
-                map.put("name","yecong");
-                map.put("job","职务2");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","9");
-                map.put("name","guiquan");
-                map.put("job","职务3");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","10");
-                map.put("name","Fullinpe");
-                map.put("job","职务1");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","11");
-                map.put("name","yunqiang");
-                map.put("job","职务2");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","12");
-                map.put("name","yecong");
-                map.put("job","职务2");
-                list.add(map);
-                map=new HashMap<>();
-                map.put("num","13");
-                map.put("name","guiquan");
-                map.put("job","职务3");
-                list.add(map);
-//                SimpleAdapter adapter=new SimpleAdapter(getActivity(),
-//                        list,
-//                        R.layout.m1_item,
-//                        new String[]{"icon_num","num","essay","name","job"},
-//                        new int[]{R.id.icon_num,R.id.textView6,R.id.textView7,R.id.textView8,R.id.textView9});
-                m1_Adapter adapter=new m1_Adapter(getActivity());
-                adapter.setList(list);
-                listView.setAdapter(adapter);
                 break;
             case R.layout.m2_layout:
                 final TextView tv=view.findViewById(R.id.mysql_test);
-                final Handler handler=new Handler();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
 
-                        strings=DBUtils.connect_mysql("","G_ID");
+                        strings=DBUtils.select_DB("","G_ID");
 
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
                                 for (int i=0;i<strings.length;i++)
-                                {
                                     tv.setText(strings[i][0]);
-
-                                }
                             }
                         });
-
-
                     }
                 }).start();
                 break;
@@ -269,7 +214,91 @@ public class mFragment extends Fragment {
                 listView_m3.setAdapter(adapter_m3);
                 break;
             case R.layout.m4_layout:
+                final EditText ed1=view.findViewById(R.id.s_id);
+                final EditText ed2=view.findViewById(R.id.password);
 
+                final ConstraintLayout cl1=view.findViewById(R.id.sign_m4);
+                final ConstraintLayout cl2=view.findViewById(R.id.msg_m4);
+                Button sign_up=view.findViewById(R.id.sign_up);
+                Button sign_in=view.findViewById(R.id.sign_in);
+                final Button settings=view.findViewById(R.id.settings);
+                settings.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Hello AlertDialog");
+                        builder.setMessage("休息吗？");
+                        builder.setPositiveButton("睡", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Objects.requireNonNull(getActivity()).finish();
+                            }
+                        });
+                        builder.setNegativeButton("不睡了",null);
+                        builder.show();
+                    }
+                });
+                sign_up.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent=new Intent();
+                        intent.setClass(Objects.requireNonNull(getActivity()),SignUpActivity.class);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+                });
+                sign_in.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                strings=null;
+                                strings=DBUtils.select_DB("SELECT * FROM admin WHERE S_ID='"
+                                        +ed1.getText().toString()+"' AND Password='"
+                                        +ed2.getText().toString()+"'","S_ID");
+
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(strings!=null)
+                                        {
+                                            if(strings.length>0)
+                                            {
+                                                cl1.setVisibility(View.GONE);
+                                                cl2.setVisibility(View.VISIBLE);
+                                            }
+                                            else
+                                            {
+                                                AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                builder.setTitle("提示：");
+                                                builder.setMessage("请确认填写学号或密码是否有误");
+                                                builder.setPositiveButton("确定", null);
+                                                builder.show();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                            builder.setTitle("提示：");
+                                            builder.setMessage("请确认网络链路正确");
+                                            builder.setPositiveButton("确定", null);
+                                            builder.show();
+                                        }
+                                    }
+                                });
+
+                                try {
+                                    Thread.sleep(300);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    }
+                });
                 break;
         }
     }

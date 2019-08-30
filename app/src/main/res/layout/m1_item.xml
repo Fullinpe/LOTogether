@@ -22,14 +22,14 @@
         android:id="@+id/name_m1_i"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:text="Jack Ma"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/job_m1_i"
+        app:layout_constraintEnd_toStartOf="@+id/textView5"
         app:layout_constraintStart_toStartOf="@+id/num_m1_i"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,5 +42,54 @@
         app:layout_constraintBottom_toBottomOf="@+id/name_m1_i"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/name_m1_i" />
+
+    <TextView
+        android:id="@+id/QQ_m1_i"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:text="316624453"
+        android:textSize="10sp"
+        android:enabled="true"
+        android:textIsSelectable="true"
+        android:focusable="true"
+        android:longClickable="true"
+        app:layout_constraintEnd_toStartOf="@+id/job_m1_i"
+        app:layout_constraintTop_toTopOf="@+id/name_m1_i" />
+
+    <TextView
+        android:id="@+id/TEL_m1_i"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="18559315627"
+        android:textSize="10sp"
+        android:enabled="true"
+        android:textIsSelectable="true"
+        android:focusable="true"
+        android:longClickable="true"
+        app:layout_constraintBottom_toBottomOf="@+id/name_m1_i"
+        app:layout_constraintEnd_toEndOf="@+id/QQ_m1_i"
+        app:layout_constraintStart_toStartOf="@+id/QQ_m1_i" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="QQ:"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/QQ_m1_i"
+        app:layout_constraintStart_toStartOf="@+id/textView6"
+        app:layout_constraintTop_toTopOf="@+id/QQ_m1_i" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="TEL:"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/TEL_m1_i"
+        app:layout_constraintEnd_toStartOf="@+id/TEL_m1_i"
+        app:layout_constraintTop_toTopOf="@+id/TEL_m1_i" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

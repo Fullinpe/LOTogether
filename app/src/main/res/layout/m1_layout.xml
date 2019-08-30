@@ -16,9 +16,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:background="#B7C3CA"
-            android:minHeight="100dp">
+            android:minHeight="50dp">
 
             <TextView
                 android:id="@+id/num_m1_i2"
@@ -52,6 +51,10 @@
                 android:layout_marginBottom="16dp"
                 android:text="姓名"
                 android:textSize="18sp"
+                android:enabled="true"
+                android:textIsSelectable="true"
+                android:focusable="true"
+                android:longClickable="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/job_m1_i2"
                 app:layout_constraintStart_toStartOf="@+id/num_m1_i2"
