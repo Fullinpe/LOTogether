@@ -1,20 +1,84 @@
 package com.example.lotogether;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener ,mFragment.OnFragmentInteractionListener{
 
+    public static String S_ID,MGR;
+    private String[][] strings;
+    private Handler handler =new Handler();
     Button b1,b2,b3,b4;
     mFragment mf1,mf2,mf3,mf4;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent intent=getIntent();
+        S_ID=intent.getStringExtra("S_ID");
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                strings=null;
+//                strings=DBUtils.select_DB("SELECT * FROM members WHERE S_ID='"
+//                        +S_ID+"'","MGR");
+//                handler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if(strings!=null)
+//                        {
+//                            if(strings.length==1)
+//                            {
+//                                MGR=strings[0][0];
+//                                if(MGR == null)
+//                                {
+//                                    b2.setVisibility(View.GONE);
+//                                    b3.setVisibility(View.GONE);
+//                                }else if(MGR.equals("1")||MGR.equals("2"))
+//                                {
+//                                    b2.setVisibility(View.GONE);
+//                                }else if(MGR.equals("3"))
+//                                {
+//                                    b2.setVisibility(View.GONE);
+//                                }
+//                            }
+//                            else if(strings.length>1)
+//                            {
+//                                AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+//                                builder.setTitle("提示：");
+//                                builder.setMessage("请联系管理员，账号异常");
+//                                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialogInterface, int i) {
+//                                        Objects.requireNonNull(MainActivity.this).finish();
+//                                    }
+//                                });
+//                                builder.show();
+//                            }
+//                        }
+//                        else
+//                        {
+//                            AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+//                            builder.setTitle("提示：");
+//                            builder.setMessage("请联系管理员，账号异常");
+//                            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//                                    Objects.requireNonNull(MainActivity.this).finish();
+//                                }
+//                            });
+//                            builder.show();
+//                        }
+//                    }
+//                });
+//            }
+//        }).start();
         mf1=mFragment.newInstance(R.layout.m1_layout +"","1");
         mf2=mFragment.newInstance(R.layout.m2_layout +"","1");
         mf3=mFragment.newInstance(R.layout.m3_layout +"","1");

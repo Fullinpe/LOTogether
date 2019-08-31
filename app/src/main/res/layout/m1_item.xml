@@ -11,7 +11,7 @@
         android:id="@+id/num_m1_i"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="8dp"
         android:text="1"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/name_m1_i"
@@ -22,7 +22,7 @@
         android:id="@+id/name_m1_i"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
@@ -30,7 +30,7 @@
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textView5"
-        app:layout_constraintStart_toStartOf="@+id/num_m1_i"
+        app:layout_constraintStart_toEndOf="@+id/num_m1_i"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
