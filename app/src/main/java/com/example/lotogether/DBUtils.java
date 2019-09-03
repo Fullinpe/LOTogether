@@ -8,8 +8,8 @@ class DBUtils {
 
     // MySQL 8.0 以上版本 - JDBC 驱动名及数据库 URL
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-//    private static final String DB_URL = "jdbc:mysql://10.22.39.84:3306/together?serverTimezone=UTC";
-    private static final String DB_URL = "jdbc:mysql://192.168.43.40:3306/together?serverTimezone=UTC&&useSSL=false";
+    private static final String DB_URL = "jdbc:mysql://10.22.138.209:3306/together?serverTimezone=Asia/Shanghai&&useSSL=false&&allowPublicKeyRetrieval=true";
+//    private static final String DB_URL = "jdbc:mysql://192.168.137.1:3306/together?serverTimezone=Asia/Shanghai&&useSSL=false&&allowPublicKeyRetrieval=true";
 
     // 数据库的用户名与密码，需要根据自己的设置
     private static final String USER = "customer";
@@ -47,6 +47,7 @@ class DBUtils {
 
             }
             // 完成后关闭
+            Log.d("TAGG","成功获取数据...");
             rs.close();
             stmt.close();
             conn.close();
@@ -66,7 +67,6 @@ class DBUtils {
                 se.printStackTrace();
             }
         }
-        Log.d("TAGG","成功获取数据...");
         return reStrs;
     }
     static int _DB(String sql)
@@ -87,6 +87,7 @@ class DBUtils {
                 sql = "SELECT * FROM members";
             reint=stmt.executeUpdate(sql);
 
+            Log.e("TAGG","成功操作数据行数："+reint);
             stmt.close();
             conn.close();
         } catch(Exception se){
@@ -105,7 +106,6 @@ class DBUtils {
                 se.printStackTrace();
             }
         }
-        Log.e("TAGG","成功操作数据行数："+reint);
         return reint;
     }
 }

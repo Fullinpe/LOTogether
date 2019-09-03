@@ -51,6 +51,7 @@
         android:ems="10"
         android:hint="XMUT_学号"
         android:inputType="textPersonName"
+        android:maxLength="10"
         android:text="1713206317"
         app:layout_constraintEnd_toEndOf="@+id/ed1_signup"
         app:layout_constraintStart_toStartOf="@+id/ed1_signup"

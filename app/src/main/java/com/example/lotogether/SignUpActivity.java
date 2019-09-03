@@ -19,6 +19,7 @@ public class SignUpActivity extends AppCompatActivity {
     int status=0;
     boolean exit_test=false,global=false;
     Handler handler=new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +37,46 @@ public class SignUpActivity extends AppCompatActivity {
         final EditText ed5=findViewById(R.id.ed5_signup);
         final EditText ed6=findViewById(R.id.ed6_signup);
         Button signup=findViewById(R.id.signup_signup);
+
+//
+//        final Dialog dialog=new Dialog(SignUpActivity.this);
+//        dialog.setContentView(R.layout.choose_dia);
+//        final ListView listView=dialog.findViewById(R.id.choose_list);
+//        final List<Map<String,Object>> list=new ArrayList<>();
+//
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                temp = null;
+//                temp=DBUtils.select_DB("","S_ID","NAME","MGR","QQ","TEL");
+//                if(temp!=null)
+//                {
+//                    Map<String, Object> map = new HashMap<>();
+//                    for (int i=0;i<temp.length;i++)
+//                    {
+//                        if(i>0)
+//                            map =new HashMap<>();
+//                        map.put("num",temp[i][0]);
+//                        map.put("name",temp[i][1]);
+//                        map.put("job",temp[i][2]);
+//                        map.put("qq",temp[i][3]);
+//                        map.put("tel",temp[i][4]);
+//                        list.add(map);
+//                    }
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            m1_Adapter adapter=new m1_Adapter(SignUpActivity.this);
+//                            adapter.setList(list);
+//                            listView.setAdapter(adapter);
+//                        }
+//                    });
+//                }
+//
+//            }
+//        }).start();
+//        dialog.show();
+
 
         new Thread(new Runnable() {
             @Override
@@ -125,7 +166,7 @@ public class SignUpActivity extends AppCompatActivity {
                         status=0;
                         if(global)
                         {
-                            status = DBUtils._DB("INSERT INTO members (S_ID,`NAME`,QQ,TEL) VALUES ('"
+                            status = DBUtils._DB("INSERT INTO members (MGR,S_ID,`NAME`,QQ,TEL) VALUES ('4','"
                                     +ed2.getText().toString() +"','"
                                     +ed1.getText().toString() +"','"
                                     +ed3.getText().toString()+"','"
@@ -150,7 +191,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 else if(global)
                                     string="链路或服务器故障，稍后再试";
                                 else
-                                    string="请确认填写信息是否有误";
+                                    string="请确认填写信息是否有误,主键冲突";
 
                                 builder.setMessage(string);
                                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {

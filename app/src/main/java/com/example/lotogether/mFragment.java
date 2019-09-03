@@ -1,20 +1,32 @@
 package com.example.lotogether;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -41,10 +53,13 @@ public class mFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private String[][] strings;
+    static boolean[] cheched;
+    int num_checked=0;
 
     private Handler handler=new Handler();
 
     private OnFragmentInteractionListener mListener;
+    private String[][] temp;
 
     public mFragment() {
         // Required empty public constructor
@@ -80,13 +95,50 @@ public class mFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        final Handler handler_dia=new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                //在需要弹出软键盘的地方发送msg
+                if (msg.what==1001){
+                    //使用以下代码来弹出软键盘
+                    InputMethodManager inputMethodManager = (InputMethodManager) Objects.requireNonNull(getActivity()).getSystemService(Context.INPUT_METHOD_SERVICE);
+                    assert inputMethodManager != null;
+                    inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+                return false;
+            }
+        });
         switch (Integer.parseInt(mParam1))
         {
             case R.layout.m1_layout:
 
                 final ListView listView=view.findViewById(R.id.member_m1);
                 final List<Map<String,Object>> list=new ArrayList<>();
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        TextView textView=view.findViewById(R.id.QQ_m1_i);
 
+                        if (isGotoable(getActivity(), "com.tencent.mobileqq"))
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin="+textView.getText().toString()+"&version=1")));
+                        else if(isGotoable(getActivity() ,"com.tencent.tim"))
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin="+textView.getText().toString()+"&version=1")));
+                        else
+                            Toast.makeText(getActivity(),"本机未安装QQ应用",Toast.LENGTH_SHORT).show();
+                    }
+                });
+                listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        TextView textView=view.findViewById(R.id.TEL_m1_i);
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + textView.getText().toString()));
+                        startActivity(intent);
+                        return true;
+                    }
+                });
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -121,22 +173,336 @@ public class mFragment extends Fragment {
 
                 break;
             case R.layout.m2_layout:
-                final TextView tv=view.findViewById(R.id.mysql_test);
-                new Thread(new Runnable() {
+                Button complaint=view.findViewById(R.id.complaint_m2);
+                Button recommend=view.findViewById(R.id.recommend_m2);
+                ImageView imageView=view.findViewById(R.id.LOGO_m2);
+                imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void run() {
-
-                        strings=DBUtils.select_DB("","S_ID");
-
-                        handler.post(new Runnable() {
+                    public void onClick(View view) {
+                        //TODO
+                    }
+                });
+                complaint.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
+                        dialog.setCancelable(false);
+                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.setContentView(R.layout.choose_dia);
+                        final ListView listView=dialog.findViewById(R.id.choose_list);
+                        TextView textView=dialog.findViewById(R.id.choose_title);
+                        Button cancel =dialog.findViewById(R.id.cancel_choose);
+                        Button ok=dialog.findViewById(R.id.ok_choose);
+                        textView.setText("请选择你想投诉的同学：");
+                        final List<Map<String,Object>> list=new ArrayList<>();
+                        cheched=null;
+                        new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                for (int i=0;i<strings.length;i++)
-                                    tv.setText(strings[i][0]);
+                                temp = null;
+                                temp=DBUtils.select_DB("","S_ID","NAME");
+
+                                cheched=new boolean[temp.length];
+                                if(temp!=null)
+                                {
+                                    Map<String, Object> map = new HashMap<>();
+                                    for (int i=0;i<temp.length;i++)
+                                    {
+                                        if(i>0)
+                                            map =new HashMap<>();
+                                        map.put("num",temp[i][0]);
+                                        map.put("name",temp[i][1]);
+                                        list.add(map);
+                                    }
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            choose_Adapter adapter=new choose_Adapter(getActivity());
+                                            adapter.setList(list);
+                                            listView.setAdapter(adapter);
+                                            dialog.show();
+                                        }
+                                    });
+                                }
+                            }
+                        }).start();
+                        ok.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                                final StringBuilder checked_= new StringBuilder();
+                                num_checked=0;
+                                boolean flag=false;
+                                if(listView.getCount()==cheched.length)
+                                    for(int i=0;i<listView.getCount();i++)
+                                    {
+                                        ConstraintLayout constraintLayout= (ConstraintLayout) listView.getAdapter().getView(i,null,null);
+                                        TextView textView1=constraintLayout.findViewById(R.id.s_id_choose);
+                                        if (cheched[i])
+                                        {
+                                            if(flag)
+                                                checked_.append(",");
+                                            flag=true;
+                                            checked_.append(textView1.getText().toString());
+                                            num_checked++;
+                                        }
+                                    }
+                                final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
+                                dialog.setContentView(R.layout.mdialog);
+                                final EditText key_dia=dialog.findViewById(R.id.key_dia);
+                                Button button=dialog.findViewById(R.id.dialog_button);
+                                button.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialog.dismiss();
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run()
+                                            {
+                                                strings=null;
+                                                strings=DBUtils.select_DB("SELECT * FROM admin WHERE S_ID='"
+                                                        +MainActivity.S_ID+"' AND Password='"
+                                                        +key_dia.getText().toString()+"'","S_ID");
+                                                if(strings!=null)
+                                                {
+                                                    if(strings.length==1)
+                                                    {
+                                                        final int rows=DBUtils._DB("UPDATE members SET COMN=COMN+"+MainActivity.MGR+" WHERE S_ID IN ("+checked_.toString()+")");
+                                                        handler.post(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+
+                                                                if(num_checked==rows)
+                                                                    Toast.makeText(getActivity(),"操作成功！",Toast.LENGTH_LONG).show();
+                                                                else
+                                                                    Toast.makeText(getActivity(),"存在自检问题，联系管理员 ",Toast.LENGTH_LONG).show();
+
+                                                            }
+                                                        });
+
+                                                    }
+                                                    else if(strings.length>1)
+                                                    {
+                                                        handler.post(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+
+                                                                AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                builder.setTitle("提示：");
+                                                                builder.setMessage("请确认网络链路正确");
+                                                                builder.setPositiveButton("确定", null);
+                                                                builder.show();
+                                                            }
+                                                        });
+                                                    }
+                                                    else
+                                                    {
+                                                        handler.post(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+
+                                                                AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                builder.setTitle("提示：");
+                                                                builder.setMessage("请确认填写密码是否有误");
+                                                                builder.setPositiveButton("确定", null);
+                                                                builder.show();
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    handler.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+
+                                                            AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                            builder.setTitle("提示：");
+                                                            builder.setMessage("请确认网络链路正确");
+                                                            builder.setPositiveButton("确定", null);
+                                                            builder.show();
+                                                        }
+                                                    });
+                                                }
+
+                                            }
+                                        }).start();
+
+                                    }
+                                });
+                                dialog.show();
+                            }
+                        });
+                        cancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                                Toast.makeText(getActivity(),"取消操作",Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
-                }).start();
+                });
+                recommend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
+                        dialog.setCancelable(false);
+                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.setContentView(R.layout.choose_dia);
+                        final ListView listView=dialog.findViewById(R.id.choose_list);
+                        TextView textView=dialog.findViewById(R.id.choose_title);
+                        Button cancel =dialog.findViewById(R.id.cancel_choose);
+                        Button ok=dialog.findViewById(R.id.ok_choose);
+                        textView.setText("请选择你想举荐的同学：");
+                        final List<Map<String,Object>> list=new ArrayList<>();
+                        cheched=null;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                temp = null;
+                                temp=DBUtils.select_DB("","S_ID","NAME");
+
+                                cheched=new boolean[temp.length];
+                                if(temp!=null)
+                                {
+                                    Map<String, Object> map = new HashMap<>();
+                                    for (int i=0;i<temp.length;i++)
+                                    {
+                                        if(i>0)
+                                            map =new HashMap<>();
+                                        map.put("num",temp[i][0]);
+                                        map.put("name",temp[i][1]);
+                                        list.add(map);
+                                    }
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            choose_Adapter adapter=new choose_Adapter(getActivity());
+                                            adapter.setList(list);
+                                            listView.setAdapter(adapter);
+                                            dialog.show();
+                                        }
+                                    });
+                                }
+                            }
+                        }).start();
+                        ok.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                                final StringBuilder checked_= new StringBuilder();
+                                num_checked=0;
+                                boolean flag=false;
+                                if(listView.getCount()==cheched.length)
+                                    for(int i=0;i<listView.getCount();i++)
+                                    {
+                                        ConstraintLayout constraintLayout= (ConstraintLayout) listView.getAdapter().getView(i,null,null);
+                                        TextView textView1=constraintLayout.findViewById(R.id.s_id_choose);
+                                        if (cheched[i])
+                                        {
+                                            if(flag)
+                                                checked_.append(",");
+                                            flag=true;
+                                            checked_.append(textView1.getText().toString());
+                                            num_checked++;
+                                        }
+                                    }
+                                Log.e("",checked_.toString());
+                                final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
+                                dialog.setContentView(R.layout.mdialog);
+                                final EditText key_dia=dialog.findViewById(R.id.key_dia);
+                                Button button=dialog.findViewById(R.id.dialog_button);
+                                button.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialog.dismiss();
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run()
+                                            {
+                                                strings=null;
+                                                strings=DBUtils.select_DB("SELECT * FROM admin WHERE S_ID='"
+                                                        +MainActivity.S_ID+"' AND Password='"
+                                                        +key_dia.getText().toString()+"'","S_ID");
+                                                if(strings!=null)
+                                                {
+                                                    if(strings.length==1)
+                                                    {
+                                                        final int rows=DBUtils._DB("UPDATE members SET RECN=RECN+"+MainActivity.MGR+" WHERE S_ID IN ("+checked_.toString()+")");
+                                                        handler.post(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+
+                                                                if(num_checked==rows)
+                                                                    Toast.makeText(getActivity(),"操作成功！",Toast.LENGTH_LONG).show();
+                                                                else
+                                                                    Toast.makeText(getActivity(),"存在自检问题，联系管理员 ",Toast.LENGTH_LONG).show();
+
+                                                            }
+                                                        });
+
+                                                    }
+                                                    else if(strings.length>1)
+                                                    {
+                                                        handler.post(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+
+                                                                AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                builder.setTitle("提示：");
+                                                                builder.setMessage("请确认网络链路正确");
+                                                                builder.setPositiveButton("确定", null);
+                                                                builder.show();
+                                                            }
+                                                        });
+                                                    }
+                                                    else
+                                                    {
+                                                        handler.post(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+
+                                                                AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                builder.setTitle("提示：");
+                                                                builder.setMessage("请确认填写密码是否有误");
+                                                                builder.setPositiveButton("确定", null);
+                                                                builder.show();
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    handler.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+
+                                                            AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                            builder.setTitle("提示：");
+                                                            builder.setMessage("请确认网络链路正确");
+                                                            builder.setPositiveButton("确定", null);
+                                                            builder.show();
+                                                        }
+                                                    });
+                                                }
+
+                                            }
+                                        }).start();
+
+                                    }
+                                });
+                                dialog.show();
+                            }
+                        });
+                        cancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                                Toast.makeText(getActivity(),"取消操作",Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
                 break;
             case R.layout.m3_layout:
                 final ListView listView_m3=view.findViewById(R.id.newmember_m3);
@@ -173,8 +539,6 @@ public class mFragment extends Fragment {
                 }).start();
                 break;
             case R.layout.m4_layout:
-
-                Button settings=view.findViewById(R.id.settings);
                 Button his_done=view.findViewById(R.id.his_done);
                 final TextView tv_1=view.findViewById(R.id.name_m4);
                 final TextView tv_2=view.findViewById(R.id.s_id_m4);
@@ -229,36 +593,87 @@ public class mFragment extends Fragment {
                         });
                     }
                 }).start();
-                settings.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Hello AlertDialog");
-                        builder.setMessage("休息吗？");
-                        builder.setPositiveButton("睡", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Objects.requireNonNull(getActivity()).finish();
-                            }
-                        });
-                        builder.setNegativeButton("不睡了",null);
-                        builder.show();
-                    }
-                });
+//                settings.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+//                        builder.setTitle("Hello AlertDialog");
+//                        builder.setMessage("休息吗？");
+//                        builder.setPositiveButton("睡", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                Objects.requireNonNull(getActivity()).finish();
+//                            }
+//                        });
+//                        builder.setNegativeButton("不睡了",null);
+//                        builder.show();
+//                    }
+//                });
+
                 his_done.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        my_Dialog infoDialog = new my_Dialog.Builder(getActivity())
-                                .setTitle("Done")
-                                .setMessage("Something done")
-                                .setButton("OK", new View.OnClickListener() {
+
+                        final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
+                        dialog.setContentView(R.layout.mdialog);
+                        final EditText key_dia=dialog.findViewById(R.id.key_dia);
+                        Button button=dialog.findViewById(R.id.dialog_button);
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run()
+                                    {
+                                        strings=null;
+                                        strings=DBUtils.select_DB("SELECT * FROM admin WHERE S_ID='"
+                                                +MainActivity.S_ID+"' AND Password='"
+                                                +key_dia.getText().toString()+"'","S_ID");
+
+                                        handler.post(new Runnable() {
                                             @Override
-                                            public void onClick(View view) {
-                                                //Toast.makeText(getActivity(), "OK Clicked.", Toast.LENGTH_SHORT).show();
+                                            public void run() {
+                                                if(strings!=null)
+                                                {
+                                                    if(strings.length==1)
+                                                    {
+                                                        Toast.makeText(getActivity(),"成功！！",Toast.LENGTH_LONG).show();
+                                                    }
+                                                    else if(strings.length>1)
+                                                    {
+                                                        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                        builder.setTitle("提示：");
+                                                        builder.setMessage("请确认网络链路正确");
+                                                        builder.setPositiveButton("确定", null);
+                                                        builder.show();
+                                                    }
+                                                    else
+                                                    {
+                                                        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                        builder.setTitle("提示：");
+                                                        builder.setMessage("请确认填写密码是否有误");
+                                                        builder.setPositiveButton("确定", null);
+                                                        builder.show();
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                    builder.setTitle("提示：");
+                                                    builder.setMessage("请确认网络链路正确");
+                                                    builder.setPositiveButton("确定", null);
+                                                    builder.show();
+                                                }
                                             }
-                                        }
-                                ).create();
-                        infoDialog.show();
+                                        });
+                                    }
+                                }).start();
+
+                            }
+                        });
+                        dialog.show();
+
                     }
                 });
 
@@ -310,5 +725,19 @@ public class mFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+    private boolean isGotoable(Context context, String packageName) {
+        if (packageName == null || "".equals(packageName))
+        {
+            Toast.makeText(context,"休想和null联系！",Toast.LENGTH_LONG).show();
+            return false;
+        }
+        try {
+            ApplicationInfo info = context.getPackageManager().getApplicationInfo(packageName,
+                    PackageManager.GET_UNINSTALLED_PACKAGES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 }
