@@ -68,8 +68,9 @@
         android:inputType="textPersonName"
         android:text="316624453"
         app:layout_constraintEnd_toEndOf="@+id/ed2_signup"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/ed2_signup"
-        app:layout_constraintTop_toBottomOf="@+id/ed2_signup"
+        app:layout_constraintTop_toBottomOf="@+id/ed7_signup"
         tools:ignore="Autofill,HardcodedText" />
 
     <EditText
@@ -185,6 +186,16 @@
         tools:ignore="HardcodedText" />
 
     <ImageView
+        android:id="@+id/status7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ed7_signup"
+        app:layout_constraintStart_toEndOf="@+id/ed1_signup"
+        app:layout_constraintTop_toTopOf="@+id/ed7_signup"
+        app:srcCompat="@android:drawable/presence_online" />
+
+    <ImageView
         android:id="@+id/status2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -243,4 +254,26 @@
         app:layout_constraintStart_toEndOf="@+id/ed1_signup"
         app:layout_constraintTop_toTopOf="@+id/ed1_signup"
         app:srcCompat="@android:drawable/presence_online" />
+
+    <EditText
+        android:id="@+id/ed7_signup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="@+id/ed2_signup"
+        app:layout_constraintStart_toStartOf="@+id/ed2_signup"
+        app:layout_constraintTop_toBottomOf="@+id/ed2_signup"
+        tools:hint="输入你的专业" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:text="专业："
+        app:layout_constraintBottom_toBottomOf="@+id/ed7_signup"
+        app:layout_constraintEnd_toStartOf="@+id/ed7_signup"
+        app:layout_constraintTop_toTopOf="@+id/ed7_signup" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.example.lotogether;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -8,13 +9,17 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -26,8 +31,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,15 +123,15 @@ public class mFragment extends Fragment {
 
                 final ListView listView=view.findViewById(R.id.member_m1);
                 final List<Map<String,Object>> list=new ArrayList<>();
+                final m1_Adapter adapter=new m1_Adapter(getActivity());
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        TextView textView=view.findViewById(R.id.QQ_m1_i);
-
+                        Map<String,Object> map=list.get(i);
                         if (isGotoable(getActivity(), "com.tencent.mobileqq"))
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin="+textView.getText().toString()+"&version=1")));
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin="+map.get("qq")+"&version=1")));
                         else if(isGotoable(getActivity() ,"com.tencent.tim"))
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin="+textView.getText().toString()+"&version=1")));
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin="+map.get("qq")+"&version=1")));
                         else
                             Toast.makeText(getActivity(),"本机未安装QQ应用",Toast.LENGTH_SHORT).show();
                     }
@@ -131,10 +139,10 @@ public class mFragment extends Fragment {
                 listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                     @Override
                     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        TextView textView=view.findViewById(R.id.TEL_m1_i);
+                        Map<String,Object> map=list.get(i);
                         Intent intent = new Intent();
                         intent.setAction(Intent.ACTION_CALL);
-                        intent.setData(Uri.parse("tel:" + textView.getText().toString()));
+                        intent.setData(Uri.parse("tel:" + map.get("tel")));
                         startActivity(intent);
                         return true;
                     }
@@ -143,7 +151,7 @@ public class mFragment extends Fragment {
                     @Override
                     public void run() {
                         strings=null;
-                        strings=DBUtils.select_DB("","S_ID","NAME","MGR","QQ","TEL");
+                        strings=DBUtils.select_DB("SELECT * FROM members LEFT JOIN mgr_table ON members.MGR=mgr_table.mgr_id","S_ID","NAME","mgr_name","QQ","TEL");
                         if(strings!=null)
                         {
                             Map<String, Object> map = new HashMap<>();
@@ -161,7 +169,6 @@ public class mFragment extends Fragment {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    m1_Adapter adapter=new m1_Adapter(getActivity());
                                     adapter.setList(list);
                                     listView.setAdapter(adapter);
                                 }
@@ -540,6 +547,7 @@ public class mFragment extends Fragment {
                 break;
             case R.layout.m4_layout:
                 Button his_done=view.findViewById(R.id.his_done);
+                final FloatingActionButton menu=view.findViewById(R.id.menu_m4);
                 final TextView tv_1=view.findViewById(R.id.name_m4);
                 final TextView tv_2=view.findViewById(R.id.s_id_m4);
                 final TextView tv_3=view.findViewById(R.id.major_m4);
@@ -548,8 +556,8 @@ public class mFragment extends Fragment {
                     @Override
                     public void run() {
                         strings=null;
-                        strings=DBUtils.select_DB("SELECT * FROM members WHERE S_ID='"
-                                +MainActivity.S_ID+"'","NAME","S_ID","MAJOR","MGR");
+                        strings=DBUtils.select_DB("SELECT * FROM members LEFT JOIN mgr_table ON members.MGR=mgr_table.mgr_id WHERE S_ID='"
+                                +MainActivity.S_ID+"'","NAME","S_ID","MAJOR","mgr_name");
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -593,22 +601,38 @@ public class mFragment extends Fragment {
                         });
                     }
                 }).start();
-//                settings.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
-//                        builder.setTitle("Hello AlertDialog");
-//                        builder.setMessage("休息吗？");
-//                        builder.setPositiveButton("睡", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                Objects.requireNonNull(getActivity()).finish();
-//                            }
-//                        });
-//                        builder.setNegativeButton("不睡了",null);
-//                        builder.show();
-//                    }
-//                });
+                menu.setOnClickListener(new View.OnClickListener() {
+                    @SuppressLint("RtlHardcoded")
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onClick(View view) {
+                        Dialog dialog =new Dialog(Objects.requireNonNull(getActivity()));
+                        dialog.setContentView(R.layout.menu_dia);
+                        Button button1=dialog.findViewById(R.id.menu1);
+                        Button button2=dialog.findViewById(R.id.menu2);
+                        Button button3=dialog.findViewById(R.id.menu3);
+                        Button button4=dialog.findViewById(R.id.menu4);
+                        button1.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        });
+                        Window win=dialog.getWindow();
+                        assert win != null;
+                        win.setWindowAnimations(R.style.dialogWindowAnim);
+                        win.setGravity(Gravity.LEFT | Gravity.TOP);
+                        WindowManager.LayoutParams lp = win.getAttributes();
+                        lp.x = win.getWindowManager().getDefaultDisplay().getWidth()-640;
+                        lp.y = win.getWindowManager().getDefaultDisplay().getHeight()-1070;
+                        lp.width = 500;
+                        lp.height = 800;
+                        lp.alpha = 0.9f;
+                        win.setAttributes(lp);
+                        dialog.setCanceledOnTouchOutside(true);
+                        dialog.show();
+                    }
+                });
 
                 his_done.setOnClickListener(new View.OnClickListener() {
                     @Override

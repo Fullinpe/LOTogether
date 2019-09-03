@@ -16,8 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 public class SignUpActivity extends AppCompatActivity {
 
     String[][] temp;
+    String temp_major="";
     int status=0;
-    boolean exit_test=false,global=false;
+    boolean exit_test=false,global=false,s_id=true,ed7_change=false;
     Handler handler=new Handler();
 
     @Override
@@ -30,53 +31,22 @@ public class SignUpActivity extends AppCompatActivity {
         final ImageView status4=findViewById(R.id.status4);
         final ImageView status5=findViewById(R.id.status5);
         final ImageView status6=findViewById(R.id.status6);
+        final ImageView status7=findViewById(R.id.status7);
         final EditText ed1=findViewById(R.id.ed1_signup);
         final EditText ed2=findViewById(R.id.ed2_signup);
         final EditText ed3=findViewById(R.id.ed3_signup);
         final EditText ed4=findViewById(R.id.ed4_signup);
         final EditText ed5=findViewById(R.id.ed5_signup);
         final EditText ed6=findViewById(R.id.ed6_signup);
+        final EditText ed7=findViewById(R.id.ed7_signup);
         Button signup=findViewById(R.id.signup_signup);
 
-//
-//        final Dialog dialog=new Dialog(SignUpActivity.this);
-//        dialog.setContentView(R.layout.choose_dia);
-//        final ListView listView=dialog.findViewById(R.id.choose_list);
-//        final List<Map<String,Object>> list=new ArrayList<>();
-//
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                temp = null;
-//                temp=DBUtils.select_DB("","S_ID","NAME","MGR","QQ","TEL");
-//                if(temp!=null)
-//                {
-//                    Map<String, Object> map = new HashMap<>();
-//                    for (int i=0;i<temp.length;i++)
-//                    {
-//                        if(i>0)
-//                            map =new HashMap<>();
-//                        map.put("num",temp[i][0]);
-//                        map.put("name",temp[i][1]);
-//                        map.put("job",temp[i][2]);
-//                        map.put("qq",temp[i][3]);
-//                        map.put("tel",temp[i][4]);
-//                        list.add(map);
-//                    }
-//                    handler.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            m1_Adapter adapter=new m1_Adapter(SignUpActivity.this);
-//                            adapter.setList(list);
-//                            listView.setAdapter(adapter);
-//                        }
-//                    });
-//                }
-//
-//            }
-//        }).start();
-//        dialog.show();
-
+        ed2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                ed7_change=b;
+            }
+        });
 
         new Thread(new Runnable() {
             @Override
@@ -91,10 +61,18 @@ public class SignUpActivity extends AppCompatActivity {
                                 status1.setVisibility(View.VISIBLE);
                             else
                                 status1.setVisibility(View.INVISIBLE);
-                            if(!ed2.getText().toString().equals("")&&ed2.getCurrentTextColor()==Color.BLACK)
+                            if(ed2.getText().toString().length()==10&&s_id)
                                 status2.setVisibility(View.VISIBLE);
                             else
                                 status2.setVisibility(View.INVISIBLE);
+
+                            if(ed7_change)
+                                ed7.setText(temp_major);
+                            if(s_id)
+                                ed2.setTextColor(Color.BLACK);
+                            else
+                                ed2.setTextColor(Color.RED);
+
                             if(!ed3.getText().toString().equals(""))
                                 status3.setVisibility(View.VISIBLE);
                             else
@@ -111,9 +89,14 @@ public class SignUpActivity extends AppCompatActivity {
                                 status6.setVisibility(View.VISIBLE);
                             else
                                 status6.setVisibility(View.INVISIBLE);
+                            if(!ed7.getText().toString().equals(""))
+                                status7.setVisibility(View.VISIBLE);
+                            else
+                                status7.setVisibility(View.INVISIBLE);
                             global = status1.getVisibility() == View.VISIBLE && status2.getVisibility() == View.VISIBLE &&
                                     status3.getVisibility() == View.VISIBLE && status4.getVisibility() == View.VISIBLE &&
-                                    status5.getVisibility() == View.VISIBLE && status6.getVisibility() == View.VISIBLE;
+                                    status5.getVisibility() == View.VISIBLE && status6.getVisibility() == View.VISIBLE &&
+                                    status7.getVisibility() == View.VISIBLE;
 //                            Log.e("TAGG","查看："+global);
                         }
                     });
@@ -132,21 +115,23 @@ public class SignUpActivity extends AppCompatActivity {
             public void run() {
                 while(!exit_test)
                 {
+                    temp=null;
                     temp=DBUtils.select_DB("SELECT * FROM members WHERE S_ID='"+ed2.getText().toString()+"'","S_ID");
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(temp!=null)
-                            {
-                                if(temp.length>0)
-                                    ed2.setTextColor(Color.RED);
-                                else
-                                    ed2.setTextColor(Color.BLACK);
-                            }
-                            else
-                                ed2.setTextColor(Color.BLACK);
-                        }
-                    });
+
+                    if(temp!=null)
+                    {
+                        s_id = temp.length <= 0;
+                    }
+                    else
+                        s_id=true;
+
+                    temp=null;
+                    String temp1=ed2.getText().toString();
+                    if(temp1.length()>6)
+                        temp=DBUtils.select_DB("SELECT * FROM majors WHERE MAJ_id='"+temp1.substring(2,7)+"'","MAJ_name");
+                    if(temp!=null&&temp.length==1)
+                        temp_major=temp1.substring(0,2)+temp[0][0];
+//                        Log.e("TAGG","查看："+temp1.substring(0,2)+temp[0][0]);
 
                     try {
                         Thread.sleep(300);
@@ -166,11 +151,12 @@ public class SignUpActivity extends AppCompatActivity {
                         status=0;
                         if(global)
                         {
-                            status = DBUtils._DB("INSERT INTO members (MGR,S_ID,`NAME`,QQ,TEL) VALUES ('4','"
+                            status = DBUtils._DB("INSERT INTO members (MGR,S_ID,`NAME`,QQ,TEL,MAJOR) VALUES ('4','"
                                     +ed2.getText().toString() +"','"
                                     +ed1.getText().toString() +"','"
                                     +ed3.getText().toString()+"','"
-                                    +ed4.getText().toString()+"')");
+                                    +ed4.getText().toString()+"','"
+                                    +ed7.getText().toString()+"')");
                             if(status==1)
                                 status=DBUtils._DB("INSERT INTO admin VALUES ('"
                                         +ed2.getText().toString()+"','"

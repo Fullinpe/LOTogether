@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class m1_Adapter extends BaseAdapter {
 
-    private List<Map<String,Object>> list;
+    List<Map<String,Object>> list;
     private LayoutInflater inflater;
     m1_Adapter(Context context) {
         this.inflater = LayoutInflater.from(context);
@@ -42,18 +42,14 @@ public class m1_Adapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         @SuppressLint({"ViewHolder", "InflateParams"}) View view1=inflater.inflate(R.layout.m1_item,null);
 
-        TextView textView1=view1.findViewById(R.id.num_m1_i);
+        TextView textView1=view1.findViewById(R.id.major_m1_i);
         TextView textView2=view1.findViewById(R.id.name_m1_i);
         TextView textView3=view1.findViewById(R.id.job_m1_i);
-        TextView textView4=view1.findViewById(R.id.QQ_m1_i);
-        TextView textView5=view1.findViewById(R.id.TEL_m1_i);
 
         Map<String,Object> map=list.get(i);
         textView1.setText((String) map.get("num"));
         textView2.setText((String) map.get("name"));
         textView3.setText((String) map.get("job"));
-        textView4.setText((String) map.get("qq"));
-        textView5.setText((String) map.get("tel"));
 
         return view1;
     }
