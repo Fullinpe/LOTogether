@@ -1,23 +1,62 @@
 package com.example.lotogether;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.Objects;
 
 public class LogActivity extends AppCompatActivity {
 
-    String[][] strings;
+    String[][] strings,strings2;
     Handler handler=new Handler();
     boolean trouble=true;
+    private String version_id="0";
+    int down_percent=0;
+    private String mSavePath;
+    private String mVersion_name="temp.apk";
+    private boolean mIsCancel=false;
+    private ProgressBar progressBar;
+    private Dialog dialog;
+    private File apkFile;
+
+    @SuppressLint("HandlerLeak")
+    Handler handler_log=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    progressBar.setProgress(down_percent);
+                    break;
+                case 2:
+                    dialog.dismiss();
+                    installAPK();
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +65,80 @@ public class LogActivity extends AppCompatActivity {
         final EditText ed2=findViewById(R.id.password);
         Button sign_up=findViewById(R.id.sign_up);
         Button sign_in=findViewById(R.id.sign_in);
+        ActivityCompat.requestPermissions(LogActivity.this, new String[]{
+                Manifest.permission.CALL_PHONE,Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                }, 0x11);
+
+        dialog =new Dialog(this);
+        progressBar=new ProgressBar(this, null,android.R.attr.progressBarStyleHorizontal);
+        progressBar.setMax(100);
+        progressBar.setProgress(0);
+        dialog.setContentView(progressBar);
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                mIsCancel=true;
+            }
+        });
+
+        dialog.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                strings2=null;
+                strings2 = DBUtils.select_DB("SELECT MAX(version_id) version_id FROM version","version_id");
+                InputStream[] is;
+                if(strings2!=null)
+                    if(!strings2[0][0].equals(version_id))
+                    {
+                        int version_len=
+                        Integer.parseInt(DBUtils.select_DB("SELECT OCTET_LENGTH(version_blob) datesize from version " +
+                                "WHERE version_id=(SELECT MAX(version_id) FROM version)","datesize")[0][0]);
+                        String sdPath = Environment.getExternalStorageDirectory() + "/";
+                        mSavePath = sdPath + "LOTogether";
+
+                        File dir = new File(mSavePath);
+                        if (!dir.exists()){
+                            if(dir.mkdir())
+                                Log.e("LogActivity","成功创建文件夹");
+                            else
+                                Log.e("LogActivity","创建文件夹失败");
+                        }
+                        else
+                            Log.e("LogActivity","文件夹已存在");
+
+                        is = DBUtils.selectBLOB("SELECT * from version WHERE version_id="+strings2[0][0],"version_blob");
+
+                        try {
+                            apkFile = new File(mSavePath, mVersion_name);
+                            FileOutputStream fos = new FileOutputStream(apkFile);
+                            int count = 0;
+                            byte[] buffer = new byte[1024];
+                            while (!mIsCancel){
+                                int numread = is[0].read(buffer);
+                                count += numread;
+                                // 计算进度条的当前位置
+                                down_percent = (int) (((float)count/version_len) * 100);
+                                // 更新进度条
+                                handler_log.sendEmptyMessage(1);
+
+                                // 下载完成
+                                if (numread < 0){
+                                    handler_log.sendEmptyMessage(2);
+                                    Log.e("LogActivity","apk_len:"+version_len);
+                                    break;
+                                }
+                                fos.write(buffer, 0, numread);
+                            }
+                            fos.close();
+                            is[0].close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+            }
+        }).start();
+
         sign_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,5 +207,22 @@ public class LogActivity extends AppCompatActivity {
 
             }
         });
+    }
+    protected void installAPK() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        String filePath= apkFile.getAbsolutePath();
+        Log.e("安装文件路径：",filePath);
+        File file = new File(filePath);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (Build.VERSION.SDK_INT >= 24) {//大于7.0使用此方法
+            Uri apkUri = FileProvider.getUriForFile(LogActivity.this, "com.example.lotogether.fileprovider", file);///-----ide文件提供者名
+            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+        }else {//小于7.0就简单了
+            // 由于没有在Activity环境下启动Activity,设置下面的标签
+            intent.setDataAndType(Uri.fromFile(file),"application/vnd.android.package-archive");
+        }
+        startActivity(intent);
     }
 }

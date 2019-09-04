@@ -63,6 +63,7 @@ public class mFragment extends Fragment {
     private String[][] strings;
     static boolean[] cheched;
     int num_checked=0;
+    boolean exit=true;
 
     private Handler handler=new Handler();
 
@@ -606,16 +607,29 @@ public class mFragment extends Fragment {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onClick(View view) {
+                        view.setVisibility(View.INVISIBLE);
                         Dialog dialog =new Dialog(Objects.requireNonNull(getActivity()));
+                        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @SuppressLint("RestrictedApi")
+                            @Override
+                            public void onDismiss(DialogInterface dialogInterface) {
+                                menu.setVisibility(View.VISIBLE);
+                            }
+                        });
                         dialog.setContentView(R.layout.menu_dia);
                         Button button1=dialog.findViewById(R.id.menu1);
                         Button button2=dialog.findViewById(R.id.menu2);
                         Button button3=dialog.findViewById(R.id.menu3);
                         Button button4=dialog.findViewById(R.id.menu4);
-                        button1.setOnClickListener(new View.OnClickListener() {
+                        button4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-
+                                if(exit)
+                                {
+                                    exit=false;
+                                    getActivity().finish();
+                                    startActivity(new Intent(getActivity(),LogActivity.class));
+                                }
                             }
                         });
                         Window win=dialog.getWindow();
