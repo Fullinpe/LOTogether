@@ -8,11 +8,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -64,11 +67,15 @@ public class mFragment extends Fragment {
     static boolean[] cheched;
     int num_checked=0;
     boolean exit=true;
+    String newpsw=null;
+    boolean newpsw_b=true;
 
     private Handler handler=new Handler();
 
     private OnFragmentInteractionListener mListener;
     private String[][] temp;
+    private int rows2;
+    private String[] oldmsg=null;
 
     public mFragment() {
         // Required empty public constructor
@@ -281,7 +288,10 @@ public class mFragment extends Fragment {
                                                             public void run() {
 
                                                                 if(num_checked==rows)
+                                                                {
                                                                     Toast.makeText(getActivity(),"操作成功！",Toast.LENGTH_LONG).show();
+                                                                    logs_thread(MainActivity.S_ID,"投诉投票",checked_.toString());
+                                                                }
                                                                 else
                                                                     Toast.makeText(getActivity(),"存在自检问题，联系管理员 ",Toast.LENGTH_LONG).show();
 
@@ -442,7 +452,10 @@ public class mFragment extends Fragment {
                                                             public void run() {
 
                                                                 if(num_checked==rows)
+                                                                {
                                                                     Toast.makeText(getActivity(),"操作成功！",Toast.LENGTH_LONG).show();
+                                                                    logs_thread(MainActivity.S_ID,"推荐投票",checked_.toString());
+                                                                }
                                                                 else
                                                                     Toast.makeText(getActivity(),"存在自检问题，联系管理员 ",Toast.LENGTH_LONG).show();
 
@@ -553,12 +566,14 @@ public class mFragment extends Fragment {
                 final TextView tv_2=view.findViewById(R.id.s_id_m4);
                 final TextView tv_3=view.findViewById(R.id.major_m4);
                 final TextView tv_4=view.findViewById(R.id.mgr_m4);
+                final TextView tv_5=view.findViewById(R.id.QQ_m4);
+                final TextView tv_6=view.findViewById(R.id.TEL_m4);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         strings=null;
                         strings=DBUtils.select_DB("SELECT * FROM members LEFT JOIN mgr_table ON members.MGR=mgr_table.mgr_id WHERE S_ID='"
-                                +MainActivity.S_ID+"'","NAME","S_ID","MAJOR","mgr_name");
+                                +MainActivity.S_ID+"'","NAME","S_ID","MAJOR","mgr_name","QQ","TEL");
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -570,6 +585,8 @@ public class mFragment extends Fragment {
                                         tv_2.setText(strings[0][1]);
                                         tv_3.setText(strings[0][2]);
                                         tv_4.setText(strings[0][3]);
+                                        tv_5.setText(strings[0][4]);
+                                        tv_6.setText(strings[0][5]);
                                     }
                                     else if(strings.length>1)
                                     {
@@ -608,7 +625,7 @@ public class mFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         view.setVisibility(View.INVISIBLE);
-                        Dialog dialog =new Dialog(Objects.requireNonNull(getActivity()));
+                        final Dialog dialog =new Dialog(Objects.requireNonNull(getActivity()));
                         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                             @SuppressLint("RestrictedApi")
                             @Override
@@ -621,6 +638,283 @@ public class mFragment extends Fragment {
                         Button button2=dialog.findViewById(R.id.menu2);
                         Button button3=dialog.findViewById(R.id.menu3);
                         Button button4=dialog.findViewById(R.id.menu4);
+                        button1.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                final Dialog dialog1=new Dialog(getActivity());
+                                dialog1.setContentView(R.layout.edit_dia);
+                                final EditText ed1=dialog1.findViewById(R.id.ed1_dia);
+                                final EditText ed2=dialog1.findViewById(R.id.ed2_dia);
+                                final EditText ed3=dialog1.findViewById(R.id.ed3_dia);
+                                final EditText ed4=dialog1.findViewById(R.id.ed4_dia);
+                                Button button=dialog1.findViewById(R.id.edb_dia);
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        strings=null;
+                                        strings=DBUtils.select_DB("SELECT * FROM members WHERE S_ID='"+MainActivity.S_ID+"'","NAME","MAJOR","QQ","TEL");
+                                        if(strings!=null)
+                                        {
+                                            oldmsg=strings[0];
+                                            ed1.setText(strings[0][0]);
+                                            ed2.setText(strings[0][1]);
+                                            ed3.setText(strings[0][2]);
+                                            ed4.setText(strings[0][3]);
+                                            handler.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    dialog1.show();
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                        }
+                                    }
+                                }).start();
+                                button.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialog1.dismiss();
+                                        final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
+                                        dialog.setContentView(R.layout.mdialog);
+                                        final EditText key_dia=dialog.findViewById(R.id.key_dia);
+                                        Button button=dialog.findViewById(R.id.dialog_button);
+                                        button.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                dialog.dismiss();
+                                                new Thread(new Runnable() {
+                                                    @Override
+                                                    public void run()
+                                                    {
+                                                        strings=null;
+                                                        strings=DBUtils.select_DB("SELECT * FROM admin WHERE S_ID='"
+                                                                +MainActivity.S_ID+"' AND Password='"
+                                                                +key_dia.getText().toString()+"'","S_ID");
+                                                        if(strings!=null)
+                                                        {
+                                                            if(strings.length==1)
+                                                            {
+                                                                final int rows=DBUtils._DB("UPDATE members SET `NAME`='"
+                                                                        +ed1.getText().toString()+"',MAJOR='"
+                                                                        +ed2.getText().toString()+"',QQ='"
+                                                                        +ed3.getText().toString()+"',TEL='"
+                                                                        +ed4.getText().toString()+"' WHERE S_ID='"+MainActivity.S_ID+"'");
+                                                                handler.post(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+
+                                                                        if(rows==1)
+                                                                        {
+                                                                            Toast.makeText(getActivity(),"操作成功！",Toast.LENGTH_LONG).show();
+                                                                            logs_thread(MainActivity.S_ID,"修改信息",oldmsg[0]+"-@"+oldmsg[1]+"-@"+oldmsg[2]+"-@"+oldmsg[3]);
+
+                                                                        }
+                                                                        else
+                                                                            Toast.makeText(getActivity(),"存在自检问题，联系管理员 "+rows,Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                });
+                                                            }
+                                                            else if(strings.length>1)
+                                                            {
+                                                                handler.post(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                        builder.setTitle("提示：");
+                                                                        builder.setMessage("请确认网络链路正确");
+                                                                        builder.setPositiveButton("确定", null);
+                                                                        builder.show();
+                                                                    }
+                                                                });
+                                                            }
+                                                            else
+                                                            {
+                                                                handler.post(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                        builder.setTitle("提示：");
+                                                                        builder.setMessage("请确认填写密码是否有误");
+                                                                        builder.setPositiveButton("确定", null);
+                                                                        builder.show();
+                                                                    }
+                                                                });
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            handler.post(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                    builder.setTitle("提示：");
+                                                                    builder.setMessage("请确认网络链路正确");
+                                                                    builder.setPositiveButton("确定", null);
+                                                                    builder.show();
+                                                                }
+                                                            });
+                                                        }
+
+                                                    }
+                                                }).start();
+
+                                            }
+                                        });
+                                        dialog.show();
+                                    }
+                                });
+
+                            }
+                        });
+                        button2.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                                final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
+                                dialog.setContentView(R.layout.mdialog);
+                                final EditText key_dia=dialog.findViewById(R.id.key_dia);
+                                Button button=dialog.findViewById(R.id.dialog_button);
+                                button.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialog.dismiss();
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run()
+                                            {
+                                                strings=null;
+                                                strings=DBUtils.select_DB("SELECT * FROM admin WHERE S_ID='"
+                                                        +MainActivity.S_ID+"' AND Password='"
+                                                        +key_dia.getText().toString()+"'","S_ID");
+                                                if(strings!=null)
+                                                {
+                                                    if(strings.length==1)
+                                                    {
+
+                                                        newpsw=null;
+                                                        newpsw_b=true;
+                                                        handler.post(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                final Dialog dialog1=new Dialog(getActivity());
+                                                                dialog1.setContentView(R.layout.psw_dia);
+                                                                final EditText ed1=dialog1.findViewById(R.id.psw1_dia);
+                                                                final EditText ed2=dialog1.findViewById(R.id.psw2_dia);
+                                                                Button pswb=dialog1.findViewById(R.id.pswb_dia);
+                                                                ed2.addTextChangedListener(new TextWatcher() {
+                                                                    @Override
+                                                                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                                                                    }
+
+                                                                    @Override
+                                                                    public void afterTextChanged(Editable editable) {
+                                                                        if(ed2.getText().toString().equals(ed1.getText().toString()))
+                                                                            ed2.setTextColor(Color.BLACK);
+                                                                        else
+                                                                            ed2.setTextColor(Color.RED);
+                                                                    }
+                                                                });
+                                                                pswb.setOnClickListener(new View.OnClickListener() {
+                                                                    @Override
+                                                                    public void onClick(View view) {
+                                                                        if(ed1.getText().toString().equals(ed2.getText().toString())&&!ed1.getText().toString().equals(""))
+                                                                        {
+                                                                            newpsw=ed1.getText().toString();
+                                                                            dialog1.dismiss();
+                                                                            newpsw_b=false;
+                                                                        }
+                                                                        else
+                                                                            Toast.makeText(getActivity(),"两次填入密码不一致",Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                });
+                                                                dialog1.show();
+
+
+                                                            }
+                                                        });
+                                                        while (newpsw_b)
+                                                        {
+                                                            try {
+                                                                Thread.sleep(100);
+                                                            } catch (InterruptedException e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        }
+                                                        rows2=0;
+                                                        if(newpsw!=null)
+                                                        {
+                                                            rows2=DBUtils._DB("UPDATE admin SET Password='"
+                                                                    +newpsw+"' WHERE S_ID='"+MainActivity.S_ID+"'");
+                                                            handler.post(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    if(rows2==1)
+                                                                    {
+                                                                        Toast.makeText(getActivity(),"已成功修改密码！",Toast.LENGTH_LONG).show();
+                                                                        logs_thread(MainActivity.S_ID,"修改密码","已成功修改密码");
+                                                                    }
+                                                                    else
+                                                                        Toast.makeText(getActivity(),"自检错误，请联系管理员",Toast.LENGTH_LONG).show();
+                                                                }
+                                                            });
+                                                        }
+
+                                                    }
+                                                    else if(strings.length>1)
+                                                    {
+                                                        handler.post(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                builder.setTitle("提示：");
+                                                                builder.setMessage("请确认网络链路正确");
+                                                                builder.setPositiveButton("确定", null);
+                                                                builder.show();
+                                                            }
+                                                        });
+                                                    }
+                                                    else
+                                                    {
+                                                        handler.post(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                builder.setTitle("提示：");
+                                                                builder.setMessage("请确认填写密码是否有误");
+                                                                builder.setPositiveButton("确定", null);
+                                                                builder.show();
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    handler.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                            builder.setTitle("提示：");
+                                                            builder.setMessage("请确认网络链路正确");
+                                                            builder.setPositiveButton("确定", null);
+                                                            builder.show();
+                                                        }
+                                                    });
+                                                }
+
+                                            }
+                                        }).start();
+
+                                    }
+                                });
+                                dialog.show();
+                            }
+                        });
                         button4.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -676,7 +970,40 @@ public class mFragment extends Fragment {
                                                 {
                                                     if(strings.length==1)
                                                     {
-                                                        Toast.makeText(getActivity(),"成功！！",Toast.LENGTH_LONG).show();
+                                                        final Dialog dialog1=new Dialog(getActivity());
+                                                        dialog1.setContentView(R.layout.his_dia);
+                                                        final ListView listView1=dialog1.findViewById(R.id.his_list_dia);
+                                                        final List<Map<String,Object>> list=new ArrayList<>();
+                                                        new Thread(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                temp = null;
+                                                                temp=DBUtils.select_DB("SELECT * FROM `logs` WHERE S_ID='"+MainActivity.S_ID+"'","TYPE_operation","OPER_time","COMMENT");
+                                                                if(temp!=null)
+                                                                {
+                                                                    Map<String, Object> map = new HashMap<>();
+                                                                    for (int i=0;i<temp.length;i++)
+                                                                    {
+                                                                        if(i>0)
+                                                                            map =new HashMap<>();
+                                                                        map.put("type",temp[i][0]);
+                                                                        map.put("time",temp[i][1]);
+                                                                        map.put("comment",temp[i][2]);
+                                                                        list.add(map);
+                                                                    }
+                                                                    handler.post(new Runnable() {
+                                                                        @Override
+                                                                        public void run() {
+                                                                            his_Adapter adapter=new his_Adapter(getActivity());
+                                                                            adapter.setList(list);
+                                                                            listView1.setAdapter(adapter);
+                                                                            dialog1.show();
+                                                                        }
+                                                                    });
+                                                                }
+                                                            }
+                                                        }).start();
+                                                        dialog1.show();
                                                     }
                                                     else if(strings.length>1)
                                                     {
@@ -777,5 +1104,14 @@ public class mFragment extends Fragment {
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
+    }
+    static void logs_thread(final String s_id, final String type_operation, final String comment)
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DBUtils._DB("INSERT INTO `logs` (S_ID,TYPE_operation,`COMMENT`) VALUES ('"+s_id+"','"+type_operation+"','"+comment+"')");
+            }
+        }).start();
     }
 }

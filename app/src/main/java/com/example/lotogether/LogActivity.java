@@ -33,7 +33,8 @@ public class LogActivity extends AppCompatActivity {
     String[][] strings,strings2;
     Handler handler=new Handler();
     boolean trouble=true;
-    private String version_id="0";
+    private String version_id="4";
+    private String onlineversion_id="e";
     int down_percent=0;
     private String mSavePath;
     private String mVersion_name="temp.apk";
@@ -80,7 +81,8 @@ public class LogActivity extends AppCompatActivity {
                 mIsCancel=true;
             }
         });
-
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
         dialog.show();
         new Thread(new Runnable() {
             @Override
@@ -89,11 +91,13 @@ public class LogActivity extends AppCompatActivity {
                 strings2 = DBUtils.select_DB("SELECT MAX(version_id) version_id FROM version","version_id");
                 InputStream[] is;
                 if(strings2!=null)
-                    if(!strings2[0][0].equals(version_id))
+                {
+                    onlineversion_id=strings2[0][0];
+                    if(!onlineversion_id.equals(version_id))
                     {
                         int version_len=
-                        Integer.parseInt(DBUtils.select_DB("SELECT OCTET_LENGTH(version_blob) datesize from version " +
-                                "WHERE version_id=(SELECT MAX(version_id) FROM version)","datesize")[0][0]);
+                                Integer.parseInt(DBUtils.select_DB("SELECT OCTET_LENGTH(version_blob) datesize from version " +
+                                        "WHERE version_id=(SELECT MAX(version_id) FROM version)","datesize")[0][0]);
                         String sdPath = Environment.getExternalStorageDirectory() + "/";
                         mSavePath = sdPath + "LOTogether";
 
@@ -136,6 +140,9 @@ public class LogActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
+                    else
+                        dialog.dismiss();
+                }
             }
         }).start();
 
@@ -175,6 +182,7 @@ public class LogActivity extends AppCompatActivity {
                                             intent.setClass(Objects.requireNonNull(LogActivity.this),MainActivity.class);
                                             startActivity(intent);
                                             finish();
+                                            mFragment.logs_thread(ed1.getText().toString(),"登录账户","你好啊！");
                                         }
                                         else
                                         {

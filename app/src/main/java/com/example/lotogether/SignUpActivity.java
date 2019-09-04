@@ -20,6 +20,7 @@ public class SignUpActivity extends AppCompatActivity {
     int status=0;
     boolean exit_test=false,global=false,s_id=true,ed7_change=false;
     Handler handler=new Handler();
+    private String temp_log;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,6 +152,8 @@ public class SignUpActivity extends AppCompatActivity {
                         status=0;
                         if(global)
                         {
+                            MainActivity.S_ID=ed2.getText().toString();
+                            temp_log=ed1.getText().toString();
                             status = DBUtils._DB("INSERT INTO members (MGR,S_ID,`NAME`,QQ,TEL,MAJOR) VALUES ('4','"
                                     +ed2.getText().toString() +"','"
                                     +ed1.getText().toString() +"','"
@@ -172,6 +175,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 if(status==1)
                                 {
                                     string="恭喜你，欢迎加入";
+                                    mFragment.logs_thread(MainActivity.S_ID,"注册账户","欢迎你！ "+temp_log);
                                     builder.setIcon(R.mipmap.ic_launcher);
                                 }
                                 else if(global)
