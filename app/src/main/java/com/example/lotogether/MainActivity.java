@@ -1,6 +1,7 @@
 package com.example.lotogether;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Handler handler =new Handler();
     Button b1,b2,b3,b4;
     mFragment mf1,mf2,mf3,mf4;
+    private boolean check_update=true;
+    private boolean exit_out=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +97,96 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
             }
         }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean onetime=true,onetime2=true;
+                while (check_update){
+                    String[][] trash_query;
+                    trash_query = DBUtils.select_DB("SELECT MAX(version_id) version_id FROM version","version_id");
+                    if(trash_query!=null) {
+                        LogActivity.onlineversion_id = trash_query[0][0];
+                        if (!LogActivity.onlineversion_id.equals(LogActivity.version_id)&&onetime) {
+                            onetime=false;
+                            LogActivity.trash=false;
+                            handler.post(new Runnable() {
+                                @SuppressLint("SetTextI18n")
+                                @Override
+                                public void run() {
+                                    AlertDialog.Builder dialog=new AlertDialog.Builder(MainActivity.this);
+                                    dialog.setTitle("更新");
+                                    dialog.setMessage("版本已更新，请退出后重新打开APP");
+                                    dialog.setNegativeButton("退出", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            finish();
+                                        }
+                                    });
+                                    dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                        @Override
+                                        public void onCancel(DialogInterface dialogInterface) {
+                                            finish();
+                                        }
+                                    });
+                                    dialog.show();
+
+                                }
+                            });
+                        }
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    trash_query=null;
+                    if(MainActivity.S_ID!=null)
+                        trash_query = DBUtils.select_DB("SELECT OPER_device FROM `logs` WHERE `KEY`=(SELECT MAX(`KEY`) OPER_device FROM `logs` WHERE S_ID='"+MainActivity.S_ID+"' AND TYPE_operation='登录账户')","OPER_device");
+                    if(trash_query!=null) {
+                        if(!trash_query[0][0].equals(LogActivity.device_mac)&&onetime2) {
+                            onetime2=false;
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AlertDialog.Builder dialog=new AlertDialog.Builder(MainActivity.this);
+                                    dialog.setTitle("注销");
+                                    dialog.setMessage("你的账号在别处登录");
+                                    dialog.setNegativeButton("注销", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            finish();
+                                            if(exit_out)
+                                            {
+                                                exit_out=false;
+                                                finish();
+                                                startActivity(new Intent(MainActivity.this,LogActivity.class));
+                                            }
+                                            MainActivity.S_ID=null;
+                                        }
+                                    });
+                                    dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                        @Override
+                                        public void onCancel(DialogInterface dialogInterface) {
+                                            finish();
+                                            if(exit_out)
+                                            {
+                                                exit_out=false;
+                                                finish();
+                                                startActivity(new Intent(MainActivity.this,LogActivity.class));
+                                            }
+                                            MainActivity.S_ID=null;
+                                        }
+                                    });
+                                    dialog.show();
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }).start();
+
         mf1=mFragment.newInstance(R.layout.m1_layout +"","1");
         mf2=mFragment.newInstance(R.layout.m2_layout +"","1");
         mf3=mFragment.newInstance(R.layout.m3_layout +"","1");
@@ -138,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //安卓重写返回键事件
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-
             if(exit_d)
                 finish();
             else
@@ -161,5 +253,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        check_update=false;
     }
 }

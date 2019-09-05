@@ -21,6 +21,7 @@ public class SignUpActivity extends AppCompatActivity {
     boolean exit_test=false,global=false,s_id=true,ed7_change=false;
     Handler handler=new Handler();
     private String temp_log;
+    private boolean check_update=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,53 @@ public class SignUpActivity extends AppCompatActivity {
                 ed7_change=b;
             }
         });
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean onetime=true;
+                while (check_update){
+                    String[][] trash_query;
+                    trash_query = DBUtils.select_DB("SELECT MAX(version_id) version_id FROM version","version_id");
+                    if(trash_query!=null) {
+                        LogActivity.onlineversion_id = trash_query[0][0];
+                        if (!LogActivity.onlineversion_id.equals(LogActivity.version_id)&&onetime) {
+                            onetime=false;
+                            LogActivity.trash=false;
+                            handler.post(new Runnable() {
+                                @SuppressLint("SetTextI18n")
+                                @Override
+                                public void run() {
+                                    android.app.AlertDialog.Builder dialog=new android.app.AlertDialog.Builder(SignUpActivity.this);
+                                    dialog.setTitle("更新");
+                                    dialog.setMessage("版本已更新，请退出后重新打开APP");
+                                    dialog.setNegativeButton("退出", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            finish();
+                                            LogActivity.finish_.finish();
+                                        }
+                                    });
+                                    dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                        @Override
+                                        public void onCancel(DialogInterface dialogInterface) {
+                                            finish();
+                                            LogActivity.finish_.finish();
+                                        }
+                                    });
+                                    dialog.show();
 
+                                }
+                            });
+                        }
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -206,5 +253,6 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         exit_test=true;
+        check_update=false;
     }
 }

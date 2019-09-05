@@ -920,9 +920,13 @@ public class mFragment extends Fragment {
                             public void onClick(View view) {
                                 if(exit)
                                 {
+                                    dialog.dismiss();
                                     exit=false;
                                     getActivity().finish();
                                     startActivity(new Intent(getActivity(),LogActivity.class));
+                                    logs_thread(MainActivity.S_ID,"注销登录","已注销");
+                                    logs_thread_out(MainActivity.S_ID);
+                                    MainActivity.S_ID=null;
                                 }
                             }
                         });
@@ -978,16 +982,16 @@ public class mFragment extends Fragment {
                                                             @Override
                                                             public void run() {
                                                                 temp = null;
-                                                                temp=DBUtils.select_DB("SELECT * FROM `logs` WHERE S_ID='"+MainActivity.S_ID+"'","TYPE_operation","OPER_time","COMMENT");
+                                                                temp=DBUtils.select_DB("SELECT * FROM `logs` WHERE S_ID='"+MainActivity.S_ID+"' AND OPER_device NOT LIKE '---%'","TYPE_operation","OPER_time","COMMENT");
                                                                 if(temp!=null)
                                                                 {
                                                                     Map<String, Object> map = new HashMap<>();
-                                                                    for (int i=0;i<temp.length;i++)
+                                                                    for (int i=temp.length-1;i>0;i--)
                                                                     {
-                                                                        if(i>0)
+                                                                        if(i<temp.length-1)
                                                                             map =new HashMap<>();
                                                                         map.put("type",temp[i][0]);
-                                                                        map.put("time",temp[i][1]);
+                                                                        map.put("time",temp[i][1].substring(0,19));
                                                                         map.put("comment",temp[i][2]);
                                                                         list.add(map);
                                                                     }
@@ -1107,11 +1111,26 @@ public class mFragment extends Fragment {
     }
     static void logs_thread(final String s_id, final String type_operation, final String comment)
     {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                DBUtils._DB("INSERT INTO `logs` (S_ID,TYPE_operation,`COMMENT`) VALUES ('"+s_id+"','"+type_operation+"','"+comment+"')");
-            }
-        }).start();
+        if(LogActivity.device_mac!=null)
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    DBUtils._DB("INSERT INTO `logs` (S_ID,TYPE_operation,`COMMENT`,OPER_device) VALUES ('"+s_id+"','"+type_operation+"','"+comment+"','"+LogActivity.device_mac+"')");
+                }
+            }).start();
+        else
+            Log.e("mac","无法获取Mac地址");
+    }
+    static void logs_thread_out(final String s_id)
+    {
+        if(LogActivity.device_mac!=null)
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    DBUtils._DB("INSERT INTO `logs` (S_ID,TYPE_operation,`COMMENT`,OPER_device) VALUES ('"+s_id+"','登录账户','---','"+"---"+LogActivity.device_mac+"')");
+                }
+            }).start();
+        else
+            Log.e("mac","无法获取Mac地址");
     }
 }
