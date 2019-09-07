@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".LogActivity">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="#03A9F4"
+        android:fontFamily="@font/corben_bold"
+        android:gravity="center"
+        android:text="@string/title"
+        android:textColor="#FFC107"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <EditText
         android:id="@+id/s_id"
         android:layout_width="wrap_content"
@@ -14,6 +28,7 @@
         android:ems="10"
         android:hint="Student ID"
         android:inputType="number"
+        android:text="1713206317"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,6 +42,7 @@
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
+        android:text="123456"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/s_id"
@@ -83,13 +99,13 @@
         android:id="@+id/welcome_m4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="60dp"
         android:text="欢迎！"
         android:textColor="#E91E63"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
         tools:ignore="HardcodedText" />
 
     <TextView

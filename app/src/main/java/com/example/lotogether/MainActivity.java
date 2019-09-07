@@ -6,15 +6,21 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import java.util.Objects;
 
@@ -28,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     mFragment mf1,mf2,mf3,mf4;
     private boolean check_update=true;
     private boolean exit_out=true;
+    private boolean m2_onscreen =false;
+    static int temp,temp1;
+    static boolean pri1_able=false,pri2_able=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,13 +107,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }).start();
 
+        mf1=mFragment.newInstance(R.layout.m1_layout +"","1");
+        mf2=mFragment.newInstance(R.layout.m2_layout +"","1");
+        mf3=mFragment.newInstance(R.layout.m3_layout +"","1");
+        mf4=mFragment.newInstance(R.layout.m4_layout +"","1");
+        getSupportFragmentManager().beginTransaction().add(R.id.ll,mf4).commitAllowingStateLoss();
+
+        b1=findViewById(R.id.button1);
+        b2=findViewById(R.id.button2);
+        b3=findViewById(R.id.button3);
+        b4=findViewById(R.id.button4);
+        b4.setTypeface(ResourcesCompat.getFont(this, R.font.font_fill));
+        b1.setOnClickListener(this);
+        b2.setOnClickListener(this);
+        b3.setOnClickListener(this);
+        b4.setOnClickListener(this);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 boolean onetime=true,onetime2=true;
                 while (check_update){
-                    String[][] trash_query;
-                    trash_query = DBUtils.select_DB("SELECT MAX(version_id) version_id FROM version","version_id");
+                    String[][] trash_query=null;
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if(MainActivity.S_ID!=null)
+                        trash_query = DBUtils.select_DB("SELECT MAX(version_id) version_id FROM version UNION " +
+                                "SELECT OPER_device FROM `logs` WHERE `KEY`=(SELECT MAX(`KEY`) " +
+                                "OPER_device FROM `logs` WHERE S_ID='"+MainActivity.S_ID
+                                +"' AND TYPE_operation='登录账户') UNION SELECT PRI FROM members WHERE S_ID='"+MainActivity.S_ID
+                                +"' UNION SELECT PRI1 FROM members WHERE S_ID='"+MainActivity.S_ID
+                                +"' UNION SELECT PRI2 FROM members WHERE S_ID='"+MainActivity.S_ID+"'","version_id");
                     if(trash_query!=null) {
                         LogActivity.onlineversion_id = trash_query[0][0];
                         if (!LogActivity.onlineversion_id.equals(LogActivity.version_id)&&onetime) {
@@ -134,17 +170,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                             });
                         }
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    trash_query=null;
-                    if(MainActivity.S_ID!=null)
-                        trash_query = DBUtils.select_DB("SELECT OPER_device FROM `logs` WHERE `KEY`=(SELECT MAX(`KEY`) OPER_device FROM `logs` WHERE S_ID='"+MainActivity.S_ID+"' AND TYPE_operation='登录账户')","OPER_device");
-                    if(trash_query!=null) {
-                        if(!trash_query[0][0].equals(LogActivity.device_mac)&&onetime2) {
+                        if(!trash_query[1][0].equals(LogActivity.device_mac)&&onetime2) {
                             onetime2=false;
                             handler.post(new Runnable() {
                                 @Override
@@ -156,8 +182,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             finish();
-                                            if(exit_out)
-                                            {
+                                            if(exit_out) {
                                                 exit_out=false;
                                                 finish();
                                                 startActivity(new Intent(MainActivity.this,LogActivity.class));
@@ -169,8 +194,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         @Override
                                         public void onCancel(DialogInterface dialogInterface) {
                                             finish();
-                                            if(exit_out)
-                                            {
+                                            if(exit_out) {
                                                 exit_out=false;
                                                 finish();
                                                 startActivity(new Intent(MainActivity.this,LogActivity.class));
@@ -182,42 +206,165 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                             });
                         }
+                        if(trash_query.length>2) {
+                            temp=Integer.parseInt(trash_query[2][0]);
+                            handler.post(new Runnable() {
+                                @RequiresApi(api = Build.VERSION_CODES.P)
+                                @Override
+                                public void run() {
+                                    if(m2_onscreen) {
+                                        ProgressBar progressBar=findViewById(R.id.pb_m2);
+                                        TextView textView=findViewById(R.id.raise_hands);
+                                        progressBar.setProgress(temp);
+                                        if(temp>=getResources().getInteger(R.integer.max_pro)) {
+                                            textView.setVisibility(View.VISIBLE);
+                                        }
+                                        else{
+                                            textView.setVisibility(View.INVISIBLE);
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        if(trash_query.length>3) {
+                            temp1=Integer.parseInt(trash_query[3][0]);
+                            pri1_able=temp1==1;
+                            pri2_able=temp1==1;
+                        }
+                        if(trash_query.length>4) {
+                            temp1=Integer.parseInt(trash_query[4][0]);
+                            pri2_able=temp1==1;
+                        }
+                        Log.e("chakan",""+pri1_able+pri2_able);
+                        Log.e("chakan",trash_query.length+"");
                     }
                 }
             }
         }).start();
-
-        mf1=mFragment.newInstance(R.layout.m1_layout +"","1");
-        mf2=mFragment.newInstance(R.layout.m2_layout +"","1");
-        mf3=mFragment.newInstance(R.layout.m3_layout +"","1");
-        mf4=mFragment.newInstance(R.layout.m4_layout +"","1");
-        getSupportFragmentManager().beginTransaction().add(R.id.ll,mf4).commitAllowingStateLoss();
-
-        b1=findViewById(R.id.button1);
-        b2=findViewById(R.id.button2);
-        b3=findViewById(R.id.button3);
-        b4=findViewById(R.id.button4);
-        b1.setOnClickListener(this);
-        b2.setOnClickListener(this);
-        b3.setOnClickListener(this);
-        b4.setOnClickListener(this);
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                boolean onetime=true,onetime2=true;
+//                while (check_update){
+//                    String[][] trash_query;
+//                    trash_query = DBUtils.select_DB("SELECT MAX(version_id) version_id FROM version","version_id");
+//                    if(trash_query!=null) {
+//                        LogActivity.onlineversion_id = trash_query[0][0];
+//                        if (!LogActivity.onlineversion_id.equals(LogActivity.version_id)&&onetime) {
+//                            onetime=false;
+//                            LogActivity.trash=false;
+//                            handler.post(new Runnable() {
+//                                @SuppressLint("SetTextI18n")
+//                                @Override
+//                                public void run() {
+//                                    AlertDialog.Builder dialog=new AlertDialog.Builder(MainActivity.this);
+//                                    dialog.setTitle("更新");
+//                                    dialog.setMessage("版本已更新，请退出后重新打开APP");
+//                                    dialog.setNegativeButton("退出", new DialogInterface.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialogInterface, int i) {
+//                                            finish();
+//                                        }
+//                                    });
+//                                    dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                                        @Override
+//                                        public void onCancel(DialogInterface dialogInterface) {
+//                                            finish();
+//                                        }
+//                                    });
+//                                    dialog.show();
+//
+//                                }
+//                            });
+//                        }
+//                    }
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    trash_query=null;
+//                    if(MainActivity.S_ID!=null)
+//                        trash_query = DBUtils.select_DB("SELECT OPER_device FROM `logs` WHERE `KEY`=(SELECT MAX(`KEY`) OPER_device FROM `logs` WHERE S_ID='"+MainActivity.S_ID+"' AND TYPE_operation='登录账户')","OPER_device");
+//                    if(trash_query!=null) {
+//                        if(!trash_query[0][0].equals(LogActivity.device_mac)&&onetime2) {
+//                            onetime2=false;
+//                            handler.post(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    AlertDialog.Builder dialog=new AlertDialog.Builder(MainActivity.this);
+//                                    dialog.setTitle("注销");
+//                                    dialog.setMessage("你的账号在别处登录");
+//                                    dialog.setNegativeButton("注销", new DialogInterface.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialogInterface, int i) {
+//                                            finish();
+//                                            if(exit_out)
+//                                            {
+//                                                exit_out=false;
+//                                                finish();
+//                                                startActivity(new Intent(MainActivity.this,LogActivity.class));
+//                                            }
+//                                            MainActivity.S_ID=null;
+//                                        }
+//                                    });
+//                                    dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                                        @Override
+//                                        public void onCancel(DialogInterface dialogInterface) {
+//                                            finish();
+//                                            if(exit_out)
+//                                            {
+//                                                exit_out=false;
+//                                                finish();
+//                                                startActivity(new Intent(MainActivity.this,LogActivity.class));
+//                                            }
+//                                            MainActivity.S_ID=null;
+//                                        }
+//                                    });
+//                                    dialog.show();
+//                                }
+//                            });
+//                        }
+//                    }
+//                }
+//            }
+//        }).start();
 
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId())
-        {
+        switch (view.getId()) {
             case R.id.button1:
+                m2_onscreen =false;
+                b1.setTypeface(ResourcesCompat.getFont(this, R.font.font_fill));
+                b2.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
+                b3.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
+                b4.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
                 getSupportFragmentManager().beginTransaction().replace(R.id.ll,mf1).commitAllowingStateLoss();
                 break;
             case R.id.button2:
+                m2_onscreen =true;
+                b1.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
+                b2.setTypeface(ResourcesCompat.getFont(this, R.font.font_fill));
+                b3.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
+                b4.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
                 getSupportFragmentManager().beginTransaction().replace(R.id.ll,mf2).commitAllowingStateLoss();
                 break;
             case R.id.button3:
+                m2_onscreen =false;
+                b1.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
+                b2.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
+                b3.setTypeface(ResourcesCompat.getFont(this, R.font.font_fill));
+                b4.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
                 getSupportFragmentManager().beginTransaction().replace(R.id.ll,mf3).commitAllowingStateLoss();
                 break;
             case R.id.button4:
+                m2_onscreen =false;
+                b1.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
+                b2.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
+                b3.setTypeface(ResourcesCompat.getFont(this, R.font.font_blank));
+                b4.setTypeface(ResourcesCompat.getFont(this, R.font.font_fill));
                 getSupportFragmentManager().beginTransaction().replace(R.id.ll,mf4).commitAllowingStateLoss();
                 break;
         }

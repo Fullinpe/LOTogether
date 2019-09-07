@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
@@ -27,7 +26,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,20 +53,16 @@ import java.util.Objects;
  * create an instance of this fragment.
  */
 public class mFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
-    private String mParam2;
     private String[][] strings;
     static boolean[] cheched;
-    int num_checked=0;
-    boolean exit=true;
-    String newpsw=null;
-    boolean newpsw_b=true;
+    private int num_checked=0;
+    private boolean exit=true;
+    private String newpsw=null;
+    private boolean newpsw_b=true;
 
     private Handler handler=new Handler();
 
@@ -89,7 +83,6 @@ public class mFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment mFragment.
      */
-    // TODO: Rename and change types and number of parameters
     static mFragment newInstance(String param1, String param2) {
         mFragment fragment = new mFragment();
         Bundle args = new Bundle();
@@ -104,7 +97,6 @@ public class mFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -148,10 +140,7 @@ public class mFragment extends Fragment {
                     @Override
                     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                         Map<String,Object> map=list.get(i);
-                        Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_CALL);
-                        intent.setData(Uri.parse("tel:" + map.get("tel")));
-                        startActivity(intent);
+                        startActivity(new Intent(Intent.ACTION_CALL,Uri.parse("tel:" + map.get("tel"))));
                         return true;
                     }
                 });
@@ -159,7 +148,7 @@ public class mFragment extends Fragment {
                     @Override
                     public void run() {
                         strings=null;
-                        strings=DBUtils.select_DB("SELECT * FROM members LEFT JOIN mgr_table ON members.MGR=mgr_table.mgr_id","S_ID","NAME","mgr_name","QQ","TEL");
+                        strings=DBUtils.select_DB("SELECT MAJOR,`NAME`,QQ,TEL,mgr_name FROM members LEFT JOIN mgr_table ON members.MGR=mgr_table.mgr_id WHERE MGR>1 ORDER BY MGR DESC","MAJOR","NAME","mgr_name","QQ","TEL");
                         if(strings!=null)
                         {
                             Map<String, Object> map = new HashMap<>();
@@ -188,21 +177,19 @@ public class mFragment extends Fragment {
 
                 break;
             case R.layout.m2_layout:
-                Button complaint=view.findViewById(R.id.complaint_m2);
-                Button recommend=view.findViewById(R.id.recommend_m2);
-                ImageView imageView=view.findViewById(R.id.LOGO_m2);
-                imageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //TODO
-                    }
-                });
+                final Button complaint=view.findViewById(R.id.complaint_m2);
+                final Button recommend=view.findViewById(R.id.recommend_m2);
                 complaint.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        complaint.setClickable(false);
                         final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
-                        dialog.setCancelable(false);
-                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                complaint.setClickable(true);
+                            }
+                        });
                         dialog.setContentView(R.layout.choose_dia);
                         final ListView listView=dialog.findViewById(R.id.choose_list);
                         TextView textView=dialog.findViewById(R.id.choose_title);
@@ -217,9 +204,9 @@ public class mFragment extends Fragment {
                                 temp = null;
                                 temp=DBUtils.select_DB("","S_ID","NAME");
 
-                                cheched=new boolean[temp.length];
                                 if(temp!=null)
                                 {
+                                    cheched=new boolean[temp.length];
                                     Map<String, Object> map = new HashMap<>();
                                     for (int i=0;i<temp.length;i++)
                                     {
@@ -244,62 +231,105 @@ public class mFragment extends Fragment {
                         ok.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                dialog.dismiss();
-                                final StringBuilder checked_= new StringBuilder();
-                                num_checked=0;
-                                boolean flag=false;
-                                if(listView.getCount()==cheched.length)
-                                    for(int i=0;i<listView.getCount();i++)
-                                    {
-                                        ConstraintLayout constraintLayout= (ConstraintLayout) listView.getAdapter().getView(i,null,null);
-                                        TextView textView1=constraintLayout.findViewById(R.id.s_id_choose);
-                                        if (cheched[i])
-                                        {
-                                            if(flag)
-                                                checked_.append(",");
-                                            flag=true;
-                                            checked_.append(textView1.getText().toString());
-                                            num_checked++;
-                                        }
-                                    }
-                                final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
-                                dialog.setContentView(R.layout.mdialog);
-                                final EditText key_dia=dialog.findViewById(R.id.key_dia);
-                                Button button=dialog.findViewById(R.id.dialog_button);
-                                button.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        dialog.dismiss();
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run()
+                                if(MainActivity.pri1_able){
+                                    dialog.dismiss();
+                                    complaint.setClickable(true);
+                                    final StringBuilder checked_= new StringBuilder();
+                                    num_checked=0;
+                                    boolean flag=false;
+                                    if(listView.getCount()==cheched.length)
+                                        for(int i=0;i<listView.getCount();i++) {
+                                            ConstraintLayout constraintLayout= (ConstraintLayout) listView.getAdapter().getView(i,null,null);
+                                            TextView textView1=constraintLayout.findViewById(R.id.s_id_choose);
+                                            if (cheched[i])
                                             {
-                                                strings=null;
-                                                strings=DBUtils.select_DB("SELECT * FROM admin WHERE S_ID='"
-                                                        +MainActivity.S_ID+"' AND Password='"
-                                                        +key_dia.getText().toString()+"'","S_ID");
-                                                if(strings!=null)
+                                                if(flag)
+                                                    checked_.append(",");
+                                                flag=true;
+                                                checked_.append(textView1.getText().toString());
+                                                num_checked++;
+                                            }
+                                        }
+                                    final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
+                                    dialog.setContentView(R.layout.mdialog);
+                                    final EditText key_dia=dialog.findViewById(R.id.key_dia);
+                                    Button button=dialog.findViewById(R.id.dialog_button);
+                                    button.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            dialog.dismiss();
+                                            complaint.setClickable(true);
+                                            new Thread(new Runnable() {
+                                                @Override
+                                                public void run()
                                                 {
-                                                    if(strings.length==1)
+                                                    strings=null;
+                                                    strings=DBUtils.select_DB("SELECT * FROM admin WHERE S_ID='"
+                                                            +MainActivity.S_ID+"' AND Password='"
+                                                            +key_dia.getText().toString()+"'","S_ID");
+                                                    if(strings!=null)
                                                     {
-                                                        final int rows=DBUtils._DB("UPDATE members SET COMN=COMN+"+MainActivity.MGR+" WHERE S_ID IN ("+checked_.toString()+")");
-                                                        handler.post(new Runnable() {
-                                                            @Override
-                                                            public void run() {
+                                                        if(strings.length==1)
+                                                        {
+                                                            final int rows=DBUtils._DB("UPDATE members SET COMN=COMN+"+MainActivity.MGR+" WHERE S_ID IN ("+checked_.toString()+")");
 
-                                                                if(num_checked==rows)
+                                                            if(num_checked==rows)
+                                                            {
+                                                                handler.post(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        Toast.makeText(getActivity(),"操作成功！",Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                });
+                                                                DBUtils._DB("UPDATE members SET PRI1=0 WHERE S_ID='"+MainActivity.S_ID+"'");
+                                                                MainActivity.pri1_able=false;
+                                                                if(!MainActivity.pri2_able)
                                                                 {
-                                                                    Toast.makeText(getActivity(),"操作成功！",Toast.LENGTH_LONG).show();
-                                                                    logs_thread(MainActivity.S_ID,"投诉投票",checked_.toString());
+                                                                    MainActivity.temp=0;
+                                                                    DBUtils._DB("UPDATE members SET PRI=0 WHERE S_ID='"+MainActivity.S_ID+"'");
                                                                 }
-                                                                else
-                                                                    Toast.makeText(getActivity(),"存在自检问题，联系管理员 ",Toast.LENGTH_LONG).show();
-
+                                                                logs_thread(MainActivity.S_ID,"投诉投票",checked_.toString());
                                                             }
-                                                        });
+                                                            else{
+                                                                handler.post(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        Toast.makeText(getActivity(),"存在自检问题，联系管理员 ",Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                });
+                                                            }
 
+                                                        }
+                                                        else if(strings.length>1)
+                                                        {
+                                                            handler.post(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+
+                                                                    AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                    builder.setTitle("提示：");
+                                                                    builder.setMessage("请确认网络链路正确");
+                                                                    builder.setPositiveButton("确定", null);
+                                                                    builder.show();
+                                                                }
+                                                            });
+                                                        }
+                                                        else
+                                                        {
+                                                            handler.post(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+
+                                                                    AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                    builder.setTitle("提示：");
+                                                                    builder.setMessage("请确认填写密码是否有误");
+                                                                    builder.setPositiveButton("确定", null);
+                                                                    builder.show();
+                                                                }
+                                                            });
+                                                        }
                                                     }
-                                                    else if(strings.length>1)
+                                                    else
                                                     {
                                                         handler.post(new Runnable() {
                                                             @Override
@@ -313,65 +343,50 @@ public class mFragment extends Fragment {
                                                             }
                                                         });
                                                     }
-                                                    else
-                                                    {
-                                                        handler.post(new Runnable() {
-                                                            @Override
-                                                            public void run() {
 
-                                                                AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
-                                                                builder.setTitle("提示：");
-                                                                builder.setMessage("请确认填写密码是否有误");
-                                                                builder.setPositiveButton("确定", null);
-                                                                builder.show();
-                                                            }
-                                                        });
-                                                    }
                                                 }
-                                                else
-                                                {
-                                                    handler.post(new Runnable() {
-                                                        @Override
-                                                        public void run() {
+                                            }).start();
 
-                                                            AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
-                                                            builder.setTitle("提示：");
-                                                            builder.setMessage("请确认网络链路正确");
-                                                            builder.setPositiveButton("确定", null);
-                                                            builder.show();
-                                                        }
-                                                    });
-                                                }
-
-                                            }
-                                        }).start();
-
-                                    }
-                                });
-                                dialog.show();
+                                        }
+                                    });
+                                    dialog.show();
+                                }
+                                else{
+                                    dialog.dismiss();
+                                    complaint.setClickable(true);
+                                    Toast.makeText(getActivity(),"当前不能投票",Toast.LENGTH_LONG).show();
+                                }
                             }
                         });
                         cancel.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 dialog.dismiss();
-                                Toast.makeText(getActivity(),"取消操作",Toast.LENGTH_SHORT).show();
+                                complaint.setClickable(true);
                             }
                         });
+
+
+
                     }
                 });
                 recommend.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        recommend.setClickable(false);
                         final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
-                        dialog.setCancelable(false);
-                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                recommend.setClickable(true);
+                            }
+                        });
                         dialog.setContentView(R.layout.choose_dia);
                         final ListView listView=dialog.findViewById(R.id.choose_list);
                         TextView textView=dialog.findViewById(R.id.choose_title);
                         Button cancel =dialog.findViewById(R.id.cancel_choose);
                         Button ok=dialog.findViewById(R.id.ok_choose);
-                        textView.setText("请选择你想举荐的同学：");
+                        textView.setText("请选择你想推荐的同学：");
                         final List<Map<String,Object>> list=new ArrayList<>();
                         cheched=null;
                         new Thread(new Runnable() {
@@ -380,9 +395,9 @@ public class mFragment extends Fragment {
                                 temp = null;
                                 temp=DBUtils.select_DB("","S_ID","NAME");
 
-                                cheched=new boolean[temp.length];
                                 if(temp!=null)
                                 {
+                                    cheched=new boolean[temp.length];
                                     Map<String, Object> map = new HashMap<>();
                                     for (int i=0;i<temp.length;i++)
                                     {
@@ -407,63 +422,106 @@ public class mFragment extends Fragment {
                         ok.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                dialog.dismiss();
-                                final StringBuilder checked_= new StringBuilder();
-                                num_checked=0;
-                                boolean flag=false;
-                                if(listView.getCount()==cheched.length)
-                                    for(int i=0;i<listView.getCount();i++)
-                                    {
-                                        ConstraintLayout constraintLayout= (ConstraintLayout) listView.getAdapter().getView(i,null,null);
-                                        TextView textView1=constraintLayout.findViewById(R.id.s_id_choose);
-                                        if (cheched[i])
-                                        {
-                                            if(flag)
-                                                checked_.append(",");
-                                            flag=true;
-                                            checked_.append(textView1.getText().toString());
-                                            num_checked++;
-                                        }
-                                    }
-                                Log.e("",checked_.toString());
-                                final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
-                                dialog.setContentView(R.layout.mdialog);
-                                final EditText key_dia=dialog.findViewById(R.id.key_dia);
-                                Button button=dialog.findViewById(R.id.dialog_button);
-                                button.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        dialog.dismiss();
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run()
+                                if(MainActivity.pri2_able){
+                                    dialog.dismiss();
+                                    recommend.setClickable(true);
+                                    final StringBuilder checked_= new StringBuilder();
+                                    num_checked=0;
+                                    boolean flag=false;
+                                    if(listView.getCount()==cheched.length)
+                                        for(int i=0;i<listView.getCount();i++) {
+                                            ConstraintLayout constraintLayout= (ConstraintLayout) listView.getAdapter().getView(i,null,null);
+                                            TextView textView1=constraintLayout.findViewById(R.id.s_id_choose);
+                                            if (cheched[i])
                                             {
-                                                strings=null;
-                                                strings=DBUtils.select_DB("SELECT * FROM admin WHERE S_ID='"
-                                                        +MainActivity.S_ID+"' AND Password='"
-                                                        +key_dia.getText().toString()+"'","S_ID");
-                                                if(strings!=null)
+                                                if(flag)
+                                                    checked_.append(",");
+                                                flag=true;
+                                                checked_.append(textView1.getText().toString());
+                                                num_checked++;
+                                            }
+                                        }
+                                    final Dialog dialog=new Dialog(Objects.requireNonNull(getActivity()));
+                                    dialog.setContentView(R.layout.mdialog);
+                                    final EditText key_dia=dialog.findViewById(R.id.key_dia);
+                                    Button button=dialog.findViewById(R.id.dialog_button);
+                                    button.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            dialog.dismiss();
+                                            recommend.setClickable(true);
+                                            new Thread(new Runnable() {
+                                                @Override
+                                                public void run()
                                                 {
-                                                    if(strings.length==1)
+                                                    strings=null;
+                                                    strings=DBUtils.select_DB("SELECT * FROM admin WHERE S_ID='"
+                                                            +MainActivity.S_ID+"' AND Password='"
+                                                            +key_dia.getText().toString()+"'","S_ID");
+                                                    if(strings!=null)
                                                     {
-                                                        final int rows=DBUtils._DB("UPDATE members SET RECN=RECN+"+MainActivity.MGR+" WHERE S_ID IN ("+checked_.toString()+")");
-                                                        handler.post(new Runnable() {
-                                                            @Override
-                                                            public void run() {
+                                                        if(strings.length==1)
+                                                        {
+                                                            final int rows=DBUtils._DB("UPDATE members SET RECN=RECN+"+MainActivity.MGR+" WHERE S_ID IN ("+checked_.toString()+")");
 
-                                                                if(num_checked==rows)
+                                                            if(num_checked==rows)
+                                                            {
+                                                                handler.post(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        Toast.makeText(getActivity(),"操作成功！",Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                });
+                                                                DBUtils._DB("UPDATE members SET PRI2=0 WHERE S_ID='"+MainActivity.S_ID+"'");
+                                                                MainActivity.pri2_able=false;
+                                                                if(!MainActivity.pri1_able)
                                                                 {
-                                                                    Toast.makeText(getActivity(),"操作成功！",Toast.LENGTH_LONG).show();
-                                                                    logs_thread(MainActivity.S_ID,"推荐投票",checked_.toString());
+                                                                    MainActivity.temp=0;
+                                                                    DBUtils._DB("UPDATE members SET PRI=0 WHERE S_ID='"+MainActivity.S_ID+"'");
+
                                                                 }
-                                                                else
-                                                                    Toast.makeText(getActivity(),"存在自检问题，联系管理员 ",Toast.LENGTH_LONG).show();
-
+                                                                logs_thread(MainActivity.S_ID,"推荐投票",checked_.toString());
                                                             }
-                                                        });
+                                                            else{
+                                                                handler.post(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        Toast.makeText(getActivity(),"存在自检问题，联系管理员 ",Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                });
+                                                            }
 
+                                                        }
+                                                        else if(strings.length>1)
+                                                        {
+                                                            handler.post(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+
+                                                                    AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                    builder.setTitle("提示：");
+                                                                    builder.setMessage("请确认网络链路正确");
+                                                                    builder.setPositiveButton("确定", null);
+                                                                    builder.show();
+                                                                }
+                                                            });
+                                                        }
+                                                        else
+                                                        {
+                                                            handler.post(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+
+                                                                    AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                                                    builder.setTitle("提示：");
+                                                                    builder.setMessage("请确认填写密码是否有误");
+                                                                    builder.setPositiveButton("确定", null);
+                                                                    builder.show();
+                                                                }
+                                                            });
+                                                        }
                                                     }
-                                                    else if(strings.length>1)
+                                                    else
                                                     {
                                                         handler.post(new Runnable() {
                                                             @Override
@@ -477,49 +535,26 @@ public class mFragment extends Fragment {
                                                             }
                                                         });
                                                     }
-                                                    else
-                                                    {
-                                                        handler.post(new Runnable() {
-                                                            @Override
-                                                            public void run() {
 
-                                                                AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
-                                                                builder.setTitle("提示：");
-                                                                builder.setMessage("请确认填写密码是否有误");
-                                                                builder.setPositiveButton("确定", null);
-                                                                builder.show();
-                                                            }
-                                                        });
-                                                    }
                                                 }
-                                                else
-                                                {
-                                                    handler.post(new Runnable() {
-                                                        @Override
-                                                        public void run() {
+                                            }).start();
 
-                                                            AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
-                                                            builder.setTitle("提示：");
-                                                            builder.setMessage("请确认网络链路正确");
-                                                            builder.setPositiveButton("确定", null);
-                                                            builder.show();
-                                                        }
-                                                    });
-                                                }
-
-                                            }
-                                        }).start();
-
-                                    }
-                                });
-                                dialog.show();
+                                        }
+                                    });
+                                    dialog.show();
+                                }
+                                else{
+                                    dialog.dismiss();
+                                    recommend.setClickable(true);
+                                    Toast.makeText(getActivity(),"当前不能投票",Toast.LENGTH_LONG).show();
+                                }
                             }
                         });
                         cancel.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 dialog.dismiss();
-                                Toast.makeText(getActivity(),"取消操作",Toast.LENGTH_SHORT).show();
+                                recommend.setClickable(true);
                             }
                         });
                     }
@@ -533,17 +568,16 @@ public class mFragment extends Fragment {
                     @Override
                     public void run() {
                         strings=null;
-                        strings=DBUtils.select_DB("","S_ID","NAME","RECN");
-                        if(strings!=null)
-                        {
+                        strings=DBUtils.select_DB("SELECT * FROM members WHERE MGR=1","S_ID","NAME","RECN","MAJOR");
+                        if(strings!=null) {
                             Map<String, Object> map = new HashMap<>();
-                            for (int i=0;i<strings.length;i++)
-                            {
+                            for (int i=0;i<strings.length;i++) {
                                 if(i>0)
                                     map =new HashMap<>();
                                 map.put("num",strings[i][0]);
                                 map.put("name",strings[i][1]);
                                 map.put("accept",strings[i][2]);
+                                map.put("major_n",strings[i][3]);
                                 list_m3.add(map);
                             }
                             handler.post(new Runnable() {
@@ -636,7 +670,7 @@ public class mFragment extends Fragment {
                         dialog.setContentView(R.layout.menu_dia);
                         Button button1=dialog.findViewById(R.id.menu1);
                         Button button2=dialog.findViewById(R.id.menu2);
-                        Button button3=dialog.findViewById(R.id.menu3);
+//                        Button button3=dialog.findViewById(R.id.menu3);
                         Button button4=dialog.findViewById(R.id.menu4);
                         button1.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -986,7 +1020,7 @@ public class mFragment extends Fragment {
                                                                 if(temp!=null)
                                                                 {
                                                                     Map<String, Object> map = new HashMap<>();
-                                                                    for (int i=temp.length-1;i>0;i--)
+                                                                    for (int i=temp.length-1;i>=0;i--)
                                                                     {
                                                                         if(i<temp.length-1)
                                                                             map =new HashMap<>();
@@ -1102,7 +1136,7 @@ public class mFragment extends Fragment {
             return false;
         }
         try {
-            ApplicationInfo info = context.getPackageManager().getApplicationInfo(packageName,
+            context.getPackageManager().getApplicationInfo(packageName,
                     PackageManager.GET_UNINSTALLED_PACKAGES);
             return true;
         } catch (PackageManager.NameNotFoundException e) {
@@ -1121,7 +1155,7 @@ public class mFragment extends Fragment {
         else
             Log.e("mac","无法获取Mac地址");
     }
-    static void logs_thread_out(final String s_id)
+    private static void logs_thread_out(final String s_id)
     {
         if(LogActivity.device_mac!=null)
             new Thread(new Runnable() {

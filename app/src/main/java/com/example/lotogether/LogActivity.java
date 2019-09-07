@@ -37,7 +37,7 @@ public class LogActivity extends AppCompatActivity {
     Handler handler=new Handler();
     boolean trouble=true;
     //TODO
-    static String version_id="4";
+    static String version_id="6";
 
     static String onlineversion_id="e";
     int down_percent=0;
@@ -67,11 +67,13 @@ public class LogActivity extends AppCompatActivity {
 
     @SuppressLint("StaticFieldLeak")
     public static LogActivity finish_;
+    static int max_=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
+        max_=getResources().getInteger(R.integer.max_pro);
         device_mac=getLocalMac();
         Log.e("MAC",device_mac);
         final EditText ed1=findViewById(R.id.s_id);
@@ -163,8 +165,8 @@ public class LogActivity extends AppCompatActivity {
                                 +"(SELECT MAX(`KEY`) FROM `logs` WHERE S_ID=(SELECT S_ID FROM `logs` WHERE `KEY`="
                                 +"(SELECT MAX(`KEY`) FROM `logs` WHERE OPER_device='"+device_mac+"' "
                                 +"AND TYPE_operation='登录账户')) AND TYPE_operation='登录账户')","OPER_device","S_ID");
-                        if(trash_query!=null) {
-                            if(trash_query[0][0].equals(device_mac)) {
+                        if(trash_query!=null&&trash_query.length>0) {
+                            if(trash_query[0][0]!=null&&trash_query[0][0].equals(device_mac)) {
                                 MainActivity.S_ID=trash_query[0][1];
                                 Intent intent=new Intent();
                                 intent.putExtra("S_ID",trash_query[0][1]);
