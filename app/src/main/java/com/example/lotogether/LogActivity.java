@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,7 +38,7 @@ public class LogActivity extends AppCompatActivity {
     Handler handler=new Handler();
     boolean trouble=true;
     //TODO
-    static String version_id="6";
+    static String version_id="1";
 
     static String onlineversion_id="e";
     int down_percent=0;
@@ -80,6 +81,45 @@ public class LogActivity extends AppCompatActivity {
         final EditText ed2=findViewById(R.id.password);
         Button sign_up=findViewById(R.id.sign_up);
         Button sign_in=findViewById(R.id.sign_in);
+        TextView textView=findViewById(R.id.log_bug);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Dialog dialog=new Dialog(LogActivity.this);
+                dialog.setContentView(R.layout.bug_dia);
+                Button button=dialog.findViewById(R.id.commit_bug);
+                final EditText editText=dialog.findViewById(R.id.bug_ed_dia);
+                dialog.show();
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                        if(editText.getText().toString().length()>5)
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    int temp=DBUtils._DB("INSERT INTO bug_report (bug_com,bug)VALUES ('"+(MainActivity.S_ID==null?LogActivity.device_mac:MainActivity.S_ID)+"','"+editText.getText().toString()+"')");
+                                    if(temp!=1)
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(LogActivity.this,"提交失败，请检查网络",Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    else
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(LogActivity.this,"提交成功，感谢反馈",Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+
+                                }
+                            }).start();
+                    }
+                });
+            }
+        });
         ActivityCompat.requestPermissions(LogActivity.this, new String[]{
                 Manifest.permission.CALL_PHONE,Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
                 }, 0x11);

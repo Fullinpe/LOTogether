@@ -8,7 +8,7 @@
     tools:context=".SignUpActivity">
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/sign_bug"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:background="#03A9F4"
@@ -30,9 +30,9 @@
         android:ems="10"
         android:hint="你的姓名"
         android:inputType="textPersonName"
-        android:text="测试123"
+        android:maxLength="5"
         app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/sign_bug"
         tools:ignore="Autofill,HardcodedText,MissingConstraints" />
 
     <TextView
@@ -55,7 +55,6 @@
         android:hint="XMUT_学号"
         android:inputType="textPersonName"
         android:maxLength="10"
-        android:text="1713206317"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/ed1_signup"
         app:layout_constraintStart_toStartOf="@+id/ed1_signup"
@@ -70,7 +69,7 @@
         android:ems="10"
         android:hint="你的QQ账号"
         android:inputType="textPersonName"
-        android:text="316624453"
+        android:maxLength="11"
         app:layout_constraintEnd_toEndOf="@+id/ed2_signup"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/ed2_signup"
@@ -85,7 +84,7 @@
         android:ems="10"
         android:hint="你的联系电话"
         android:inputType="textPersonName"
-        android:text="18559315627"
+        android:maxLength="11"
         app:layout_constraintEnd_toEndOf="@+id/ed3_signup"
         app:layout_constraintStart_toStartOf="@+id/ed3_signup"
         app:layout_constraintTop_toBottomOf="@+id/ed3_signup"
@@ -99,7 +98,7 @@
         android:ems="10"
         android:hint="密码"
         android:inputType="textPassword"
-        android:text="123456"
+        android:maxLength="30"
         app:layout_constraintEnd_toEndOf="@+id/ed4_signup"
         app:layout_constraintStart_toStartOf="@+id/ed4_signup"
         app:layout_constraintTop_toBottomOf="@+id/ed4_signup"
@@ -113,7 +112,7 @@
         android:ems="10"
         android:hint="确认密码"
         android:inputType="textPassword"
-        android:text="123456"
+        android:maxLength="30"
         app:layout_constraintEnd_toEndOf="@+id/ed5_signup"
         app:layout_constraintStart_toStartOf="@+id/ed5_signup"
         app:layout_constraintTop_toBottomOf="@+id/ed5_signup"
@@ -266,6 +265,7 @@
         android:layout_marginTop="32dp"
         android:ems="10"
         android:inputType="textPersonName"
+        android:maxLength="10"
         app:layout_constraintEnd_toEndOf="@+id/ed2_signup"
         app:layout_constraintStart_toStartOf="@+id/ed2_signup"
         app:layout_constraintTop_toBottomOf="@+id/ed2_signup"

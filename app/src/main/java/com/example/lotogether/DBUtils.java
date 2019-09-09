@@ -134,7 +134,7 @@ class DBUtils {
 
             stmt = conn.createStatement();
             if(sql.equals(""))
-                sql = "SELECT * FROM members";
+                sql = "SELECT * FROM members WHERE S_ID>1000000000";
             reint=stmt.executeUpdate(sql);
 
             Log.e("TAGG","成功操作数据行数："+reint);

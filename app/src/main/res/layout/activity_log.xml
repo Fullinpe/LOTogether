@@ -7,7 +7,7 @@
     tools:context=".LogActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/log_bug"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:background="#03A9F4"
@@ -28,7 +28,7 @@
         android:ems="10"
         android:hint="Student ID"
         android:inputType="number"
-        android:text="1713206317"
+        android:maxLength="10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -42,7 +42,7 @@
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
-        android:text="123456"
+        android:maxLength="30"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/s_id"
@@ -105,7 +105,7 @@
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/log_bug"
         tools:ignore="HardcodedText" />
 
     <TextView
@@ -113,7 +113,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="version_1.0.0"
+        android:text="version_1.0.1"
         app:layout_constraintEnd_toEndOf="@+id/welcome_m4"
         app:layout_constraintHorizontal_bias="0.48"
         app:layout_constraintStart_toStartOf="@+id/welcome_m4"

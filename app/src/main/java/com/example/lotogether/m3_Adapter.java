@@ -2,11 +2,14 @@ package com.example.lotogether;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +18,7 @@ public class m3_Adapter extends BaseAdapter {
 
     private List<Map<String,Object>> list;
     private LayoutInflater inflater;
+
     m3_Adapter(Context context) {
         this.inflater = LayoutInflater.from(context);
     }
@@ -39,18 +43,82 @@ public class m3_Adapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(final int i, final View view, ViewGroup viewGroup) {
         @SuppressLint({"ViewHolder", "InflateParams"}) View view1=inflater.inflate(R.layout.m3_item,null);
 
         TextView textView1=view1.findViewById(R.id.name_m3_i);
         TextView textView2=view1.findViewById(R.id.num_m3_i);
         TextView textView3=view1.findViewById(R.id.m3_major_name_i);
+        final Button button=view1.findViewById(R.id.accept_b);
+        button.setEnabled(false);
 
-
-        Map<String,Object> map=list.get(i);
+        final Map<String,Object> map=list.get(i);
         textView1.setText((String) map.get("name"));
         textView2.setText((String) map.get("num"));
         textView3.setText((String)map.get("major_n"));
+
+        final android.os.Handler handler=new Handler();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String[][] strings=DBUtils.select_DB("SELECT `KEY` FROM `logs` WHERE S_ID='"+MainActivity.S_ID+"' AND TYPE_operation='纳新投票' AND `COMMENT`='"+map.get("num")+"'","KEY");
+                if(strings!=null) {
+                    if (strings.length > 0) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                button.setEnabled(false);
+                            }
+                        });
+                    }else{
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                button.setEnabled(true);
+                            }
+                        });
+                    }
+                }
+            }
+        }).start();
+
+        final boolean[] lock_b = {true};
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                if(lock_b[0]){
+                    lock_b[0] =false;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String[][] strings=DBUtils.select_DB("SELECT `KEY` FROM `logs` WHERE S_ID='"+MainActivity.S_ID+"' AND TYPE_operation='纳新投票' AND `COMMENT`='"+map.get("num")+"'","KEY");
+                            if(strings!=null){
+                                if(strings.length>0){
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            button.setEnabled(false);
+                                            lock_b[0] =true;
+                                            Toast.makeText(getView(i,view,null).getContext(),"已为"+ map.get("name")+"投过票，不能再投",Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }else {
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mFragment.logs_thread(MainActivity.S_ID,"纳新投票",(String) map.get("num"));
+                                            button.setEnabled(false);
+                                            Toast.makeText(getView(i,view,null).getContext(),"已为"+ map.get("name")+"投票",Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }).start();
+                }
+            }
+        });
 
 
         return view1;

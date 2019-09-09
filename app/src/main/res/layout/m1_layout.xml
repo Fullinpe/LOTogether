@@ -13,6 +13,13 @@
         tools:ignore="UselessParent">
 
 
+        <TextView
+            android:id="@+id/count_m1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="现在人数：1" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -58,6 +65,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/job_m1_i2"
                 app:layout_constraintStart_toStartOf="@+id/num_m1_i2"
                 app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ListView

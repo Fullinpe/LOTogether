@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#A5CDEE"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/bug_ed_dia"
+        android:layout_width="300dp"
+        android:layout_height="250dp"
+        android:layout_margin="10dp"
+        android:ems="10"
+        android:fadeScrollbars="false"
+        android:gravity="start|top"
+        android:hint="请填写你的建议\n或是遇到的BUG"
+        android:inputType="textMultiLine" />
+
+    <Button
+        android:id="@+id/commit_bug"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/font_fill"
+        android:text="提交" />
+</LinearLayout>

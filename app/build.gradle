@@ -34,4 +34,5 @@ dependencies {
     implementation files('libs/mysql-connector-java-5.1.48.jar')
     implementation 'org.jetbrains:annotations-java5:15.0'
     implementation 'org.jetbrains:annotations-java5:15.0'
+    implementation project(path: ':fungamerefresh')
 }
