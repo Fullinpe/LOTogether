@@ -4,8 +4,12 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +27,7 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.ArrayList;
@@ -58,6 +63,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Intent intent=getIntent();
         S_ID=intent.getStringExtra("S_ID");
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Notification notification;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel("123", "测试通知组",
+                    NotificationManager.IMPORTANCE_HIGH);
+            // 设置渠道描述
+            notificationChannel.setDescription("测试通知组");
+            // 是否绕过请勿打扰模式
+            notificationChannel.canBypassDnd();
+            // 设置绕过请勿打扰模式
+            notificationChannel.setBypassDnd(true);
+            // 桌面Launcher的消息角标
+            notificationChannel.canShowBadge();
+            // 设置显示桌面Launcher的消息角标
+            notificationChannel.setShowBadge(true);
+            // 设置通知出现时声音，默认通知是有声音的
+            notificationChannel.setSound(null, null);
+            // 设置通知出现时的闪灯（如果 android 设备支持的话）
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.WHITE);
+            // 设置通知出现时的震动（如果 android 设备支持的话）
+            notificationChannel.enableVibration(true);
+            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400,
+                    300, 200, 400});
+            assert notificationManager != null;
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+        notification = new NotificationCompat.Builder(this, "123").setSmallIcon(R.mipmap.ic_launcher_round)
+                .setTicker("注目提醒！")
+                //设置通知图标
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                //设置通知内容标题
+                .setContentTitle("LOT："+S_ID)
+                //设置通知内容
+                .setContentText("LOT正在后台运行")
+                .build();
+        notification.flags |= Notification.FLAG_NO_CLEAR|Notification.FLAG_ONGOING_EVENT;
+        assert notificationManager != null;
+        notificationManager.notify(0,notification);
 
         new Thread(new Runnable() {
             @Override

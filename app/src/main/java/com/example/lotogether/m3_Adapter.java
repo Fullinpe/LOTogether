@@ -49,6 +49,7 @@ public class m3_Adapter extends BaseAdapter {
         TextView textView1=view1.findViewById(R.id.name_m3_i);
         TextView textView2=view1.findViewById(R.id.num_m3_i);
         TextView textView3=view1.findViewById(R.id.m3_major_name_i);
+        TextView textView4=view1.findViewById(R.id.m3_accept_num_i);
         final Button button=view1.findViewById(R.id.accept_b);
         button.setEnabled(false);
 
@@ -56,6 +57,7 @@ public class m3_Adapter extends BaseAdapter {
         textView1.setText((String) map.get("name"));
         textView2.setText((String) map.get("num"));
         textView3.setText((String)map.get("major_n"));
+        textView4.setText((String)map.get("accept"));
 
         final android.os.Handler handler=new Handler();
 

@@ -68,11 +68,18 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ListView
-            android:id="@+id/member_m1"
+        <com.hitomi.refresh.view.FunGameRefreshView
+            android:id="@+id/refresh_hit_block"
+            app:game_type="battle_city"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            tools:ignore="NestedScrolling" />
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/member_m1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                tools:ignore="NestedScrolling" />
+        </com.hitomi.refresh.view.FunGameRefreshView>
     </LinearLayout>
 </LinearLayout>

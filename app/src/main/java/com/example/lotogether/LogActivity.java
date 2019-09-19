@@ -4,8 +4,13 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +27,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -38,7 +44,7 @@ public class LogActivity extends AppCompatActivity {
     Handler handler=new Handler();
     boolean trouble=true;
     //TODO
-    static String version_id="1";
+    static String version_id="3";
 
     static String onlineversion_id="e";
     int down_percent=0;
@@ -81,6 +87,8 @@ public class LogActivity extends AppCompatActivity {
         final EditText ed2=findViewById(R.id.password);
         Button sign_up=findViewById(R.id.sign_up);
         Button sign_in=findViewById(R.id.sign_in);
+
+
         TextView textView=findViewById(R.id.log_bug);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override

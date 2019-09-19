@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -38,6 +39,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.hitomi.refresh.view.FunGameRefreshView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,6 +127,19 @@ public class mFragment extends Fragment {
                 final ListView listView=view.findViewById(R.id.member_m1);
                 final List<Map<String,Object>> list=new ArrayList<>();
                 final m1_Adapter adapter=new m1_Adapter(getActivity());
+
+                FunGameRefreshView refreshView = view.findViewById(R.id.refresh_hit_block);
+                refreshView.setOnRefreshListener(new FunGameRefreshView.FunGameRefreshListener() {
+                    @Override
+                    public void onPullRefreshing() {
+                        // 模拟后台耗时任务
+                        SystemClock.sleep(2000);
+                    }
+
+                    @Override
+                    public void onRefreshComplete() {
+                    }
+                });
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -141,18 +156,18 @@ public class mFragment extends Fragment {
                         }
                     }
                 });
-                listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                    @Override
-                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        if(!MainActivity.MGR.equals("0")){
-                            Map<String,Object> map=list.get(i);
-                            startActivity(new Intent(Intent.ACTION_CALL,Uri.parse("tel:" + map.get("tel"))));
-                        }else{
-                            Toast.makeText(getActivity(),"你还不是成员，无法快捷通讯及获取更多信息",Toast.LENGTH_LONG).show();
-                        }
-                        return true;
-                    }
-                });
+//                listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//                    @Override
+//                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                        if(!MainActivity.MGR.equals("0")){
+//                            Map<String,Object> map=list.get(i);
+//                            startActivity(new Intent(Intent.ACTION_CALL,Uri.parse("tel:" + map.get("tel"))));
+//                        }else{
+//                            Toast.makeText(getActivity(),"你还不是成员，无法快捷通讯及获取更多信息",Toast.LENGTH_LONG).show();
+//                        }
+//                        return true;
+//                    }
+//                });
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
